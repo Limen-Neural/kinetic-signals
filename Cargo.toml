@@ -11,10 +11,10 @@ keywords = ["neuromorphic", "snn", "signals", "time-series", "hurst", "hawkes"]
 categories = ["algorithms", "science"]
 
 [dependencies]
-serde = { workspace = true }
+serde = { version = "1.0", features = ["derive"] }
 
 [dev-dependencies]
-rand = { workspace = true }
+rand = "0.8"
 
 [profile.release]
 opt-level = 3
