@@ -1,0 +1,22 @@
+[package]
+name = "spikenaut-signals"
+version = "0.2.0"
+edition = "2024"
+authors = ["Raul Montoya Cardenas"]
+description = "Streaming time-series feature extraction for Spikenaut SNNs"
+license = "GPL-3.0"
+repository = "https://github.com/Spikenaut/spikenaut-signals"
+readme = "README.md"
+keywords = ["neuromorphic", "snn", "signals", "time-series", "hurst", "hawkes"]
+categories = ["algorithms", "science"]
+
+[dependencies]
+serde = { workspace = true }
+
+[dev-dependencies]
+rand = { workspace = true }
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
