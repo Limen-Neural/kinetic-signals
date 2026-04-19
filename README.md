@@ -1,18 +1,15 @@
-# spikenaut-signals
+# kinetic-signals
 
-Streaming time-series feature extraction for Spikenaut SNNs (Spiking Neural Networks).
+Streaming feature extraction for high-velocity stochastic signals.
 
-A high-performance, zero-overhead Rust crate for computing neuromorphic signal primitives used in the Spikenaut architecture. Designed for sub-millisecond execution on AMD Ryzen 9 9950X.
-
-## Provenance
-
-Extracted from Eagle-Lander, the author's own private neuromorphic GPU supervisor repository (closed-source). The Hurst, Hawkes, and GBM modules were used in production to extract real-time features from GPU telemetry and HFT data streams for SNN input.
+A high-performance Rust crate for computing streaming signal statistics, point-process intensity features, and anomaly metrics on stochastic time-series.
 
 ## Features
 
+- **Zero dependencies** - No external crates required
 - **Hurst Exponent** - Detects long-term memory and persistence in time-series data
-- **Hawkes Process** - Models self-exciting event clusters (PCIe floods, spike bursts)
-- **GBM Surprise** - Detects anomalous power transients using Geometric Brownian Motion
+- **Hawkes Process** - Models self-exciting event clusters in point-process streams
+- **GBM Surprise** - Detects anomalous return magnitudes with Geometric Brownian Motion
 - **Volatility** - Real-time variance and standard deviation tracking
 - **Shannon Entropy** - Measures signal complexity and information density
 - **Indicators** - Moving averages (EMA, SMA) and Z-score tracking
@@ -24,14 +21,14 @@ Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-spikenaut-signals = { path = "../spikenaut-signals" }
+kinetic-signals = { git = "https://github.com/Raul-BioMEMS/kinetic-signals" }
 ```
 
 ## Usage
 
 ```rust
-use spikenaut_signals::{
-    compute_hurst, compute_hawkes, compute_gbm_surprise,
+use kinetic_signals::{
+    compute_hurst, compute_hawkes, compute_gbm_surprise, detect_anomaly,
     hawkes::HawkesParams, gbm::GBMParams,
 };
 
@@ -53,6 +50,18 @@ if detect_anomaly(&surprise, &params) {
     println!("ANOMALY DETECTED! z = {:.2}", surprise.z_score);
 }
 ```
+
+### Demo
+
+Run the included demo:
+
+```bash
+cargo run --example demo
+```
+
+### Numeric types
+
+Most APIs use `f64`. `compute_hurst` and GBM helpers are generic and support `f32` and `f64`.
 
 ## Performance
 

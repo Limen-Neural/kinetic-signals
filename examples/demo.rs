@@ -1,10 +1,22 @@
-use spikenaut_signals::{
+use kinetic_signals::{
     compute_gbm_surprise, compute_hawkes, compute_hurst, compute_shannon_entropy,
     compute_volatility, gbm::GBMParams, hawkes::HawkesParams, volatility::MovingVolatility,
 };
 
+fn lcg_next(state: &mut u64) -> u64 {
+    // Numerical Recipes LCG constants (good enough for a demo; not crypto-secure)
+    *state = state.wrapping_mul(6364136223846793005).wrapping_add(1);
+    *state
+}
+
+fn pseudo_random_f64(state: &mut u64) -> f64 {
+    // Map top 53 bits to [0, 1)
+    let x = lcg_next(state) >> 11;
+    (x as f64) / ((1u64 << 53) as f64)
+}
+
 fn main() {
-    println!("=== Spikenaut Signals Demo v0.2.0 ===\n");
+    println!("=== Kinetic Signals Demo v0.2.0 ===\n");
 
     demo_hurst();
     demo_hawkes();
@@ -23,7 +35,8 @@ fn demo_hurst() {
         result.h, result.is_persistent
     );
 
-    let random: Vec<f64> = (0..100).map(|_| rand::random::<f64>() - 0.5).collect();
+    let mut rng = 0x1234_5678_9abc_def0_u64;
+    let random: Vec<f64> = (0..100).map(|_| pseudo_random_f64(&mut rng) - 0.5).collect();
     let result = compute_hurst(&random);
     println!(
         "Random data H={:.3} (anti={})",
@@ -45,7 +58,7 @@ fn demo_hawkes() {
     let burst_events: Vec<f64> = vec![0.0, 0.01, 0.02, 0.03, 0.1, 0.5, 0.51, 0.52];
     let result = compute_hawkes(&burst_events, &params);
     println!(
-        "PCIe burst: intensity={:.3}, events={}, avg_excitation={:.3}",
+        "Dense burst: intensity={:.3}, events={}, avg_excitation={:.3}",
         result.intensity, result.event_count, result.avg_excitation
     );
 
@@ -59,7 +72,7 @@ fn demo_hawkes() {
 }
 
 fn demo_gbm() {
-    println!("--- GBM Surprise (Power Transients) ---");
+    println!("--- GBM Surprise (Return Transients) ---");
 
     let params = GBMParams {
         mu: 0.0,
@@ -124,7 +137,8 @@ fn demo_entropy() {
         res1.shannon, res1.relative, res1.bin_count
     );
 
-    let high_entropy: Vec<f64> = (0..100).map(|_| rand::random::<f64>()).collect();
+    let mut rng = 0x0bad_f00d_dead_beef_u64;
+    let high_entropy: Vec<f64> = (0..100).map(|_| pseudo_random_f64(&mut rng)).collect();
     let res2 = compute_shannon_entropy(&high_entropy, 10);
     println!(
         "High complexity: H={:.3}, relative={:.3}, bins={}",

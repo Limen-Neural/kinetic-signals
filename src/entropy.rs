@@ -1,6 +1,4 @@
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct EntropyResult {
     pub shannon: f64,
     pub relative: f64, // normalized to [0, 1]
