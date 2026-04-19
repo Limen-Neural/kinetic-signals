@@ -1,13 +1,11 @@
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct HawkesResult {
     pub intensity: f64,
     pub event_count: usize,
     pub avg_excitation: f64,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct HawkesParams {
     pub mu: f64,
     pub alpha: f64,

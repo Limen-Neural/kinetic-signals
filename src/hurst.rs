@@ -1,17 +1,24 @@
-use serde::{Deserialize, Serialize};
+use crate::real::Real;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct HurstResult {
-    pub h: f64,
+#[derive(Debug, Clone)]
+pub struct HurstResult<T = f64> {
+    pub h: T,
     pub is_persistent: bool,
     pub is_antipersistent: bool,
 }
 
-pub fn compute_hurst(data: &[f64]) -> HurstResult {
+fn c<T: Real>(value: f64) -> T {
+    T::from_f64(value)
+}
+
+pub fn compute_hurst<T>(data: &[T]) -> HurstResult<T>
+where
+    T: Real,
+{
     let n = data.len();
     if n < 32 {
         return HurstResult {
-            h: 0.5,
+            h: c(0.5),
             is_persistent: false,
             is_antipersistent: false,
         };
@@ -32,69 +39,70 @@ pub fn compute_hurst(data: &[f64]) -> HurstResult {
     let mut log_n = Vec::with_capacity(tau_values.len());
 
     for &tau in &tau_values {
-        let mut rs_sums = 0.0;
+        let mut rs_sums = T::zero();
         let mut count = 0;
 
         // Efficiently compute R/S for non-overlapping chunks
         for i in (0..=(n - tau)).step_by(tau) {
-            let chunk = &data[i..i + tau];
-            let mean = chunk.iter().sum::<f64>() / tau as f64;
+            let chunk: &[T] = &data[i..i + tau];
+            let mean: T = chunk.iter().copied().fold(T::zero(), |acc, x| acc + x)
+                / T::from_usize(tau);
 
-            let mut cumdev = 0.0;
-            let mut max_dev = 0.0f64;
-            let mut min_dev = 0.0f64;
-            let mut sq_diff_sum = 0.0;
+            let mut cumdev = T::zero();
+            let mut max_dev = T::zero();
+            let mut min_dev = T::zero();
+            let mut sq_diff_sum = T::zero();
 
             for &x in chunk {
                 let diff = x - mean;
-                cumdev += diff;
+                cumdev = cumdev + diff;
                 max_dev = max_dev.max(cumdev);
                 min_dev = min_dev.min(cumdev);
-                sq_diff_sum += diff * diff;
+                sq_diff_sum = sq_diff_sum + diff * diff;
             }
 
-            let std_dev = (sq_diff_sum / tau as f64).sqrt();
-            if std_dev > 1e-12 {
-                rs_sums += (max_dev - min_dev) / std_dev;
+            let std_dev = (sq_diff_sum / T::from_usize(tau)).sqrt();
+            if std_dev > c(1e-12) {
+                rs_sums = rs_sums + (max_dev - min_dev) / std_dev;
                 count += 1;
             }
         }
 
         if count > 0 {
-            let rs_avg = rs_sums / count as f64;
-            if rs_avg > 0.0 {
+            let rs_avg = rs_sums / T::from_usize(count);
+            if rs_avg > T::zero() {
                 log_rs.push(rs_avg.ln());
-                log_n.push((tau as f64).ln());
+                log_n.push(T::from_usize(tau).ln());
             }
         }
     }
 
     // Linear regression on log-log plot to find the Hurst exponent (slope)
     let h = if log_n.len() < 2 {
-        0.5
+        c(0.5)
     } else {
-        let n_mean = log_n.iter().sum::<f64>() / log_n.len() as f64;
-        let rs_mean = log_rs.iter().sum::<f64>() / log_rs.len() as f64;
+        let n_mean = log_n.iter().copied().fold(T::zero(), |acc, x| acc + x)
+            / T::from_usize(log_n.len());
+        let rs_mean = log_rs.iter().copied().fold(T::zero(), |acc, x| acc + x)
+            / T::from_usize(log_rs.len());
 
-        let num = log_n
-            .iter()
-            .zip(log_rs.iter())
-            .map(|(&x, &y)| (x - n_mean) * (y - rs_mean))
-            .sum::<f64>();
-        let den = log_n.iter().map(|&x| (x - n_mean).powi(2)).sum::<f64>();
+        let num = log_n.iter().zip(log_rs.iter()).fold(T::zero(), |acc, (&x, &y)| {
+            acc + (x - n_mean) * (y - rs_mean)
+        });
+        let den = log_n.iter().fold(T::zero(), |acc, &x| acc + (x - n_mean).powi(2));
 
-        if den.abs() < 1e-12 {
-            0.5
+        if den.abs() < c(1e-12) {
+            c(0.5)
         } else {
             num / den
         }
     };
 
-    let h = h.clamp(0.0, 1.0);
+    let h = h.max(T::zero()).min(T::one());
     HurstResult {
         h,
-        is_persistent: h > 0.52, // Small buffer around 0.5
-        is_antipersistent: h < 0.48,
+        is_persistent: h > c(0.52), // Small buffer around 0.5
+        is_antipersistent: h < c(0.48),
     }
 }
 
@@ -107,5 +115,12 @@ mod tests {
         let data: Vec<f64> = vec![1.0, 2.0, 3.0, 4.0, 5.0];
         let result = compute_hurst(&data);
         assert!(result.h >= 0.0 && result.h <= 1.0);
+    }
+
+    #[test]
+    fn test_hurst_f32_support() {
+        let data: Vec<f32> = (0..64).map(|i| i as f32 * 0.1).collect();
+        let result = compute_hurst(&data);
+        assert!(result.h >= 0.0_f32 && result.h <= 1.0_f32);
     }
 }

@@ -1,6 +1,4 @@
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct VolatilityResult {
     pub std_dev: f64,
     pub variance: f64,
@@ -28,7 +26,7 @@ pub fn compute_volatility(data: &[f64]) -> VolatilityResult {
 }
 
 /// Moving Volatility using Welford's algorithm for streaming data
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct MovingVolatility {
     pub count: usize,
     pub mean: f64,

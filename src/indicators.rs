@@ -1,7 +1,5 @@
-use serde::{Deserialize, Serialize};
-
 /// Exponential Moving Average (EMA) for streaming data
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct EMA {
     pub value: f64,
     pub alpha: f64,
@@ -30,7 +28,7 @@ impl EMA {
 }
 
 /// Z-Score tracking for signal normalization
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct ZScore {
     pub mean: f64,
     pub std_dev: f64,
@@ -47,7 +45,7 @@ impl ZScore {
 }
 
 /// Simple Moving Average (SMA) with a fixed window
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub struct SMA {
     pub window: Vec<f64>,
     pub capacity: usize,

@@ -1,21 +1,15 @@
-//! # spikenaut-signals
+//! # kinetic-signals
 //!
-//! Streaming time-series feature extraction for Spikenaut SNNs (Spiking Neural Networks).
+//! Streaming feature extraction for high-velocity stochastic signals.
 //!
-//! A high-performance, zero-overhead Rust crate for computing neuromorphic signal primitives 
-//! used in the Spikenaut architecture. Designed for sub-millisecond execution on AMD Ryzen 9 9950X.
-//!
-//! ## Provenance
-//!
-//! Extracted from Eagle-Lander, the author's own private neuromorphic GPU supervisor 
-//! repository (closed-source). The Hurst, Hawkes, and GBM modules were used in production 
-//! to extract real-time features from GPU telemetry and HFT data streams for SNN input.
+//! A high-performance Rust crate for computing streaming statistics, long-memory estimates,
+//! point-process intensity, and return-based surprise metrics.
 //!
 //! ## Features
 //!
 //! - **Hurst Exponent** - Detects long-term memory and persistence in time-series data
-//! - **Hawkes Process** - Models self-exciting event clusters (PCIe floods, spike bursts)
-//! - **GBM Surprise** - Detects anomalous power transients using Geometric Brownian Motion
+//! - **Hawkes Process** - Models self-exciting event clusters in point processes
+//! - **GBM Surprise** - Detects anomalous return magnitudes using Geometric Brownian Motion
 //! - **Volatility** - Real-time variance and standard deviation tracking
 //! - **Shannon Entropy** - Measures signal complexity and information density
 //! - **Indicators** - Moving averages (EMA, SMA) and Z-score tracking
@@ -29,7 +23,7 @@
 //! ## Example
 //!
 //! ```rust
-//! use spikenaut_signals::{compute_hurst, compute_gbm_surprise, GBMParams};
+//! use kinetic_signals::{compute_hurst, compute_gbm_surprise, GBMParams};
 //!
 //! let data = vec![1.0, 2.0, 3.0, 4.0, 5.0];
 //! let h_result = compute_hurst(&data);
@@ -43,6 +37,7 @@ pub mod gbm;
 pub mod hawkes;
 pub mod hurst;
 pub mod indicators;
+mod real;
 pub mod stats;
 pub mod volatility;
 
