@@ -10,7 +10,7 @@ A high-performance Rust crate for computing streaming signal statistics, point-p
 - **Hurst Exponent** - Detects long-term memory and persistence in time-series data
 - **Hawkes Process** - Models self-exciting event clusters in point-process streams
 - **GBM Surprise** - Detects anomalous return magnitudes with Geometric Brownian Motion
-- **Volatility** - Real-time variance and standard deviation tracking
+- **Volatility (RMS)** - Rolling ring-buffer volatility tracking via `VolEstimator`
 - **Shannon Entropy** - Measures signal complexity and information density
 - **Indicators** - Moving averages (EMA, SMA) and Z-score tracking
 - **Signal Stats** - High-order moments (Skewness, Kurtosis)
@@ -29,7 +29,7 @@ kinetic-signals = { git = "https://github.com/Raul-BioMEMS/kinetic-signals" }
 ```rust
 use kinetic_signals::{
     compute_hurst, compute_hawkes, compute_gbm_surprise, detect_anomaly,
-    hawkes::HawkesParams, gbm::GBMParams,
+    hawkes::HawkesParams, gbm::GBMParams, VolEstimator,
 };
 
 // Hurst Exponent - detect trending vs random behavior
@@ -49,6 +49,12 @@ let surprise = compute_gbm_surprise(150.0, 100.0, &params);
 if detect_anomaly(&surprise, &params) {
     println!("ANOMALY DETECTED! z = {:.2}", surprise.z_score);
 }
+
+// Volatility - rolling RMS of absolute log-returns
+let mut vol = VolEstimator::new(64);
+vol.push(0.01);
+vol.push(0.02);
+println!("RMS vol = {:.4}", vol.rms());
 ```
 
 ### Demo
@@ -61,7 +67,7 @@ cargo run --example demo
 
 ### Numeric types
 
-Most APIs use `f64`. `compute_hurst` and GBM helpers are generic and support `f32` and `f64`.
+Most APIs use `f64`. `compute_hurst` and GBM helpers are generic and support `f32` and `f64`. `VolEstimator` consumes `f32` absolute log-returns and computes rolling RMS volatility.
 
 ## Performance
 
