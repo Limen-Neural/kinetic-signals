@@ -47,7 +47,7 @@ pub use hawkes::{compute_hawkes, compute_hawkes_streaming, HawkesParams, HawkesR
 pub use hurst::{compute_hurst, HurstResult};
 pub use indicators::{EMA, SMA, ZScore};
 pub use stats::{compute_signal_stats, SignalStats};
-pub use volatility::{compute_volatility, MovingVolatility, VolatilityResult};
+pub use volatility::VolEstimator;
 
 pub mod prelude {
     pub use crate::entropy::*;

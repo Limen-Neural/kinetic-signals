@@ -1,6 +1,6 @@
 use kinetic_signals::{
     compute_gbm_surprise, compute_hawkes, compute_hurst, compute_shannon_entropy,
-    compute_volatility, gbm::GBMParams, hawkes::HawkesParams, volatility::MovingVolatility,
+    gbm::GBMParams, hawkes::HawkesParams, VolEstimator,
 };
 
 fn lcg_next(state: &mut u64) -> u64 {
@@ -108,21 +108,18 @@ fn demo_gbm() {
 fn demo_volatility() {
     println!("--- Volatility (Signal Power) ---");
 
-    let data = vec![1.0, 1.1, 0.9, 1.2, 0.8, 1.5, 0.5];
-    let result = compute_volatility(&data);
-    println!(
-        "Batch: mean={:.3}, std_dev={:.3}, var={:.3}",
-        result.mean, result.std_dev, result.variance
-    );
+    let abs_log_returns = vec![0.01_f32, 0.02, 0.015, 0.03, 0.012, 0.025, 0.018];
 
-    let mut mv = MovingVolatility::new();
-    for &val in &data {
-        mv.update(val);
+    let mut estimator = VolEstimator::new(5);
+    for &r in &abs_log_returns {
+        estimator.push(r);
     }
-    let m_res = mv.result();
+
     println!(
-        "Streaming: mean={:.3}, std_dev={:.3} (count={})",
-        m_res.mean, m_res.std_dev, mv.count
+        "Rolling RMS volatility={:.4} (window={}, samples={})",
+        estimator.rms(),
+        5,
+        estimator.len()
     );
     println!();
 }

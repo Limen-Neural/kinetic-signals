@@ -1,73 +1,71 @@
-#[derive(Debug, Clone)]
-pub struct VolatilityResult {
-    pub std_dev: f64,
-    pub variance: f64,
-    pub mean: f64,
+//! Rolling RMS volatility estimator — zero-alloc, fixed-size ring buffer.
+
+/// Rolling RMS volatility estimator over a fixed window.
+///
+/// Stores absolute log-returns in a circular buffer and computes
+/// `sqrt(mean(r²))` over the window. Clamped to [0, 1].
+///
+/// # Example
+/// ```rust
+/// use kinetic_signals::VolEstimator;
+///
+/// let mut v = VolEstimator::new(50);
+/// v.push(0.01);
+/// v.push(0.02);
+/// let vol = v.rms();
+/// assert!(vol > 0.0);
+/// ```
+pub struct VolEstimator {
+    buf: Vec<f32>,
+    pos: usize,
+    full: bool,
+    cap: usize,
 }
 
-pub fn compute_volatility(data: &[f64]) -> VolatilityResult {
-    if data.len() < 2 {
-        return VolatilityResult {
-            std_dev: 0.0,
-            variance: 0.0,
-            mean: data.first().copied().unwrap_or(0.0),
-        };
-    }
-
-    let n = data.len() as f64;
-    let mean = data.iter().sum::<f64>() / n;
-    let variance = data.iter().map(|&x| (x - mean).powi(2)).sum::<f64>() / n;
-
-    VolatilityResult {
-        std_dev: variance.sqrt(),
-        variance,
-        mean,
-    }
-}
-
-/// Moving Volatility using Welford's algorithm for streaming data
-#[derive(Debug, Clone)]
-pub struct MovingVolatility {
-    pub count: usize,
-    pub mean: f64,
-    pub m2: f64,
-}
-
-impl MovingVolatility {
-    pub fn new() -> Self {
+impl VolEstimator {
+    /// Create a new estimator with the given window size.
+    pub fn new(capacity: usize) -> Self {
+        assert!(capacity > 0, "capacity must be > 0");
         Self {
-            count: 0,
-            mean: 0.0,
-            m2: 0.0,
+            buf: vec![0.0; capacity],
+            pos: 0,
+            full: false,
+            cap: capacity,
         }
     }
 
-    pub fn update(&mut self, new_value: f64) {
-        self.count += 1;
-        let delta = new_value - self.mean;
-        self.mean += delta / self.count as f64;
-        let delta2 = new_value - self.mean;
-        self.m2 += delta * delta2;
+    /// Push one absolute log-return into the ring buffer.
+    pub fn push(&mut self, abs_log_return: f32) {
+        self.buf[self.pos] = abs_log_return;
+        self.pos += 1;
+        if self.pos >= self.cap {
+            self.pos = 0;
+            self.full = true;
+        }
     }
 
-    pub fn variance(&self) -> f64 {
-        if self.count < 2 {
-            0.0
+    /// RMS volatility: `sqrt(mean(r²))` over the window, clamped to [0, 1].
+    pub fn rms(&self) -> f32 {
+        let n = if self.full { self.cap } else { self.pos };
+        if n == 0 {
+            return 0.0;
+        }
+        let sum_sq: f32 = self.buf[..n].iter().map(|r| r * r).sum();
+        (sum_sq / n as f32).sqrt().clamp(0.0, 1.0)
+    }
+
+    /// Number of samples currently in the buffer.
+    pub fn len(&self) -> usize {
+        if self.full {
+            self.cap
         } else {
-            self.m2 / self.count as f64
+            self.pos
         }
     }
 
-    pub fn std_dev(&self) -> f64 {
-        self.variance().sqrt()
-    }
-
-    pub fn result(&self) -> VolatilityResult {
-        VolatilityResult {
-            std_dev: self.std_dev(),
-            variance: self.variance(),
-            mean: self.mean,
-        }
+    /// True if the buffer is empty.
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
     }
 }
 
@@ -76,27 +74,28 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_volatility_basic() {
-        let data = vec![1.0, 2.0, 3.0, 4.0, 5.0];
-        let result = compute_volatility(&data);
-        assert_eq!(result.mean, 3.0);
-        assert!(result.std_dev > 0.0);
+    fn test_rms_three_values() {
+        let mut v = VolEstimator::new(3);
+        v.push(0.1);
+        v.push(0.2);
+        v.push(0.3);
+        // RMS([0.1, 0.2, 0.3]) = sqrt((0.01+0.04+0.09)/3) ≈ 0.2160
+        assert!((v.rms() - 0.2160).abs() < 0.01);
     }
 
     #[test]
-    fn test_moving_volatility() {
-        let mut mv = MovingVolatility::new();
-        mv.update(1.0);
-        mv.update(2.0);
-        mv.update(3.0);
-        let res = mv.result();
-        assert_eq!(res.mean, 2.0);
-        assert!(res.std_dev > 0.0);
+    fn test_empty() {
+        let v = VolEstimator::new(10);
+        assert_eq!(v.rms(), 0.0);
+        assert!(v.is_empty());
     }
-}
 
-impl Default for MovingVolatility {
-    fn default() -> Self {
-        Self::new()
+    #[test]
+    fn test_ring_overflow() {
+        let mut v = VolEstimator::new(3);
+        for i in 0..10 {
+            v.push(i as f32 * 0.1);
+        }
+        assert_eq!(v.len(), 3);
     }
 }
