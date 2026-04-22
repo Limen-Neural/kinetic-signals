@@ -21,7 +21,7 @@ Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-kinetic-signals = { git = "https://github.com/Raul-BioMEMS/kinetic-signals" }
+kinetic-signals = { git = "https://github.com/Limen-Neural/kinetic-signals" }
 ```
 
 ## Usage
