@@ -1,6 +1,6 @@
 use kinetic_signals::{
-    compute_gbm_surprise, compute_hawkes, compute_hurst, compute_shannon_entropy,
-    gbm::GBMParams, hawkes::HawkesParams, VolEstimator,
+    VolEstimator, compute_hawkes, compute_hurst, compute_shannon_entropy, compute_surprise,
+    hawkes::HawkesParams, surprise::SurpriseParams,
 };
 
 fn lcg_next(state: &mut u64) -> u64 {
@@ -16,11 +16,11 @@ fn pseudo_random_f64(state: &mut u64) -> f64 {
 }
 
 fn main() {
-    println!("=== Kinetic Signals Demo v0.2.0 ===\n");
+    println!("=== Kinetic Signals Demo v0.3.0 ===\n");
 
     demo_hurst();
     demo_hawkes();
-    demo_gbm();
+    demo_surprise();
     demo_volatility();
     demo_entropy();
 }
@@ -36,7 +36,9 @@ fn demo_hurst() {
     );
 
     let mut rng = 0x1234_5678_9abc_def0_u64;
-    let random: Vec<f64> = (0..100).map(|_| pseudo_random_f64(&mut rng) - 0.5).collect();
+    let random: Vec<f64> = (0..100)
+        .map(|_| pseudo_random_f64(&mut rng) - 0.5)
+        .collect();
     let result = compute_hurst(&random);
     println!(
         "Random data H={:.3} (anti={})",
@@ -71,23 +73,23 @@ fn demo_hawkes() {
     println!();
 }
 
-fn demo_gbm() {
-    println!("--- GBM Surprise (Return Transients) ---");
+fn demo_surprise() {
+    println!("--- Surprise (Transition Anomalies) ---");
 
-    let params = GBMParams {
+    let params = SurpriseParams {
         mu: 0.0,
         sigma: 0.15,
         dt: 0.001,
         threshold: 3.0,
     };
 
-    let normal = compute_gbm_surprise(100.5, 100.0, &params);
+    let normal = compute_surprise(100.5, 100.0, &params);
     println!(
         "Normal: surprise={:.3}, z={:.2}",
         normal.surprise, normal.z_score
     );
 
-    let spike = compute_gbm_surprise(150.0, 100.0, &params);
+    let spike = compute_surprise(150.0, 100.0, &params);
     println!(
         "SPIKE: surprise={:.3}, z={:.2} (ANOMALY={})",
         spike.surprise,
@@ -95,12 +97,12 @@ fn demo_gbm() {
         spike.surprise > params.threshold
     );
 
-    let crash = compute_gbm_surprise(50.0, 100.0, &params);
+    let drop = compute_surprise(50.0, 100.0, &params);
     println!(
-        "CRASH: surprise={:.3}, z={:.2} (ANOMALY={})",
-        crash.surprise,
-        crash.z_score,
-        crash.surprise > params.threshold
+        "DROP: surprise={:.3}, z={:.2} (ANOMALY={})",
+        drop.surprise,
+        drop.z_score,
+        drop.surprise > params.threshold
     );
     println!();
 }

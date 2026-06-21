@@ -1,128 +1,67 @@
+//! Deprecated financial-domain aliases for the generic [`crate::surprise`] module.
+//!
+//! The names in this module assumed a Geometric Brownian Motion (financial)
+//! framing. They are retained as thin, backward-compatible wrappers and will be
+//! removed in a future release. Prefer the domain-agnostic names in
+//! [`crate::surprise`].
+#![allow(deprecated)]
+
 use crate::real::Real;
+use crate::surprise::{self, SurpriseParams, SurpriseResult};
 
-#[derive(Debug, Clone)]
-pub struct GBMResult<T = f64> {
-    pub surprise: T,
-    pub log_return: T,
-    pub expected_return: T,
-    pub z_score: T,
-}
+/// Deprecated alias for [`crate::surprise::SurpriseResult`].
+#[deprecated(
+    since = "0.3.0",
+    note = "use `kinetic_signals::surprise::SurpriseResult`"
+)]
+pub type GBMResult<T = f64> = SurpriseResult<T>;
 
-#[derive(Debug, Clone)]
-pub struct GBMParams<T = f64> {
-    pub mu: T,
-    pub sigma: T,
-    pub dt: T,
-    pub threshold: T,
-}
+/// Deprecated alias for [`crate::surprise::SurpriseParams`].
+#[deprecated(
+    since = "0.3.0",
+    note = "use `kinetic_signals::surprise::SurpriseParams`"
+)]
+pub type GBMParams<T = f64> = SurpriseParams<T>;
 
-impl<T> Default for GBMParams<T>
-where
-    T: Real,
-{
-    fn default() -> Self {
-        GBMParams {
-            mu: T::zero(),
-            sigma: T::from_f64(0.1),
-            dt: T::from_f64(0.001),
-            threshold: T::from_f64(3.0),
-        }
-    }
-}
-
+/// Deprecated alias for [`crate::surprise::compute_surprise`].
+#[deprecated(
+    since = "0.3.0",
+    note = "use `kinetic_signals::surprise::compute_surprise`"
+)]
 pub fn compute_gbm_surprise<T>(
     current_value: T,
     previous_value: T,
-    params: &GBMParams<T>,
-) -> GBMResult<T>
+    params: &SurpriseParams<T>,
+) -> SurpriseResult<T>
 where
     T: Real,
 {
-    if previous_value <= T::zero() || current_value <= T::zero() {
-        return GBMResult {
-            surprise: T::zero(),
-            log_return: T::zero(),
-            expected_return: params.mu * params.dt,
-            z_score: T::zero(),
-        };
-    }
-
-    let log_return = (current_value / previous_value).ln();
-
-    let expected_return = params.mu * params.dt;
-
-    let std_dev = params.sigma * params.dt.sqrt();
-
-    let z_score = if std_dev > T::zero() {
-        (log_return - expected_return) / std_dev
-    } else {
-        T::zero()
-    };
-
-    let surprise = z_score.abs();
-
-    GBMResult {
-        surprise,
-        log_return,
-        expected_return,
-        z_score,
-    }
+    surprise::compute_surprise(current_value, previous_value, params)
 }
 
-pub fn compute_gbm_surprise_sequence<T>(values: &[T], params: &GBMParams<T>) -> Vec<GBMResult<T>>
+/// Deprecated alias for [`crate::surprise::compute_surprise_sequence`].
+#[deprecated(
+    since = "0.3.0",
+    note = "use `kinetic_signals::surprise::compute_surprise_sequence`"
+)]
+pub fn compute_gbm_surprise_sequence<T>(
+    values: &[T],
+    params: &SurpriseParams<T>,
+) -> Vec<SurpriseResult<T>>
 where
     T: Real,
 {
-    if values.len() < 2 {
-        return Vec::new();
-    }
-
-    let mut results = Vec::with_capacity(values.len() - 1);
-
-    for i in 1..values.len() {
-        let result = compute_gbm_surprise(values[i], values[i - 1], params);
-        results.push(result);
-    }
-
-    results
+    surprise::compute_surprise_sequence(values, params)
 }
 
-pub fn detect_anomaly<T>(gbm_result: &GBMResult<T>, params: &GBMParams<T>) -> bool
+/// Deprecated alias for [`crate::surprise::detect_anomaly`].
+#[deprecated(
+    since = "0.3.0",
+    note = "use `kinetic_signals::surprise::detect_anomaly`"
+)]
+pub fn detect_anomaly<T>(result: &SurpriseResult<T>, params: &SurpriseParams<T>) -> bool
 where
     T: Real,
 {
-    gbm_result.surprise > params.threshold
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_gbm_normal() {
-        let params = GBMParams::default();
-        let result = compute_gbm_surprise(100.0, 99.0, &params);
-        assert!(result.log_return > 0.0_f64);
-    }
-
-    #[test]
-    fn test_gbm_spike() {
-        let params = GBMParams::default();
-        let result = compute_gbm_surprise(200.0, 100.0, &params);
-        assert!(result.surprise > 1.0_f64);
-    }
-
-    #[test]
-    fn test_gbm_zero_protection() {
-        let params = GBMParams::default();
-        let result = compute_gbm_surprise(0.0, 100.0, &params);
-        assert_eq!(result.surprise, 0.0_f64);
-    }
-
-    #[test]
-    fn test_gbm_f32_support() {
-        let params = GBMParams::<f32>::default();
-        let result = compute_gbm_surprise(100.5_f32, 100.0_f32, &params);
-        assert!(result.surprise >= 0.0_f32);
-    }
+    surprise::detect_anomaly(result, params)
 }

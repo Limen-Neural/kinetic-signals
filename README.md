@@ -2,14 +2,14 @@
 
 Streaming feature extraction for high-velocity stochastic signals.
 
-A high-performance Rust crate for computing streaming signal statistics, point-process intensity features, and anomaly metrics on stochastic time-series.
+A high-performance, domain-agnostic Rust crate for computing streaming signal statistics, point-process intensity features, and anomaly metrics on stochastic time-series.
 
 ## Features
 
 - **Zero dependencies** - No external crates required
 - **Hurst Exponent** - Detects long-term memory and persistence in time-series data
 - **Hawkes Process** - Models self-exciting event clusters in point-process streams
-- **GBM Surprise** - Detects anomalous return magnitudes with Geometric Brownian Motion
+- **Surprise** - Detects anomalous transition magnitudes via normalized log-ratio z-scores
 - **Volatility (RMS)** - Rolling ring-buffer volatility tracking via `VolEstimator`
 - **Shannon Entropy** - Measures signal complexity and information density
 - **Indicators** - Moving averages (EMA, SMA) and Z-score tracking
@@ -28,8 +28,8 @@ kinetic-signals = { git = "https://github.com/Limen-Neural/kinetic-signals" }
 
 ```rust
 use kinetic_signals::{
-    compute_hurst, compute_hawkes, compute_gbm_surprise, detect_anomaly,
-    hawkes::HawkesParams, gbm::GBMParams, VolEstimator,
+    compute_hurst, compute_hawkes, compute_surprise, detect_anomaly,
+    hawkes::HawkesParams, surprise::SurpriseParams, VolEstimator,
 };
 
 // Hurst Exponent - detect trending vs random behavior
@@ -43,9 +43,9 @@ let events = vec![0.0, 0.01, 0.02, 0.1, 0.5];
 let result = compute_hawkes(&events, &params);
 println!("Intensity = {:.3}", result.intensity);
 
-// GBM Surprise - detect power spikes
-let params = GBMParams::default();
-let surprise = compute_gbm_surprise(150.0, 100.0, &params);
+// Surprise - detect anomalous transitions
+let params = SurpriseParams::default();
+let surprise = compute_surprise(150.0, 100.0, &params);
 if detect_anomaly(&surprise, &params) {
     println!("ANOMALY DETECTED! z = {:.2}", surprise.z_score);
 }
@@ -67,7 +67,7 @@ cargo run --example demo
 
 ### Numeric types
 
-Most APIs use `f64`. `compute_hurst` and GBM helpers are generic and support `f32` and `f64`. `VolEstimator` consumes `f32` absolute log-returns and computes rolling RMS volatility.
+Most APIs use `f64`. `compute_hurst` and the surprise helpers are generic and support `f32` and `f64`. `VolEstimator` consumes `f32` absolute log-returns and computes rolling RMS volatility.
 
 ## Performance
 
@@ -76,7 +76,42 @@ Built with aggressive optimizations for real-time inference:
 Typical execution times (Ryzen 9 9950X):
 - Hurst (100 samples): ~50μs
 - Hawkes (10 events): ~5μs
-- GBM Surprise: ~100ns
+- Surprise: ~100ns
+
+## Deprecated financial aliases
+
+Earlier releases used Geometric Brownian Motion (GBM) names. These remain available
+as deprecated aliases for backward compatibility and forward to the generic API:
+
+| Deprecated (financial)        | Use instead                |
+|-------------------------------|----------------------------|
+| `compute_gbm_surprise`        | `compute_surprise`         |
+| `compute_gbm_surprise_sequence` | `compute_surprise_sequence` |
+| `GBMParams`                   | `SurpriseParams`           |
+| `GBMResult`                   | `SurpriseResult`           |
+| `gbm::detect_anomaly`         | `surprise::detect_anomaly` |
+
+## Cross-language output ranges (SpikeStream.jl alignment)
+
+To keep experimental results consistent between this crate and the Julia
+`SpikeStream.jl` implementation, both projects share a single output-range
+convention and a shared test-vector file at
+[`tests/fixtures/shared_vectors.json`](tests/fixtures/shared_vectors.json).
+
+| Feature      | Output      | Range            |
+|--------------|-------------|------------------|
+| Hurst        | `h`         | `[0, 1]`         |
+| Hawkes       | `intensity` | `[mu, +inf)`     |
+| Hawkes       | `avg_excitation` | `[0, +inf)` |
+| Surprise     | `surprise`  | `[0, +inf)`      |
+| Entropy      | `shannon`   | `[0, ln(bins)]`  |
+| Entropy      | `relative`  | `[0, 1]`         |
+| Volatility   | `rms`       | `[0, 1]`         |
+
+The Rust side is verified by `tests/cross_language_ranges.rs`
+(`cargo test --test cross_language_ranges`). The Julia side must be validated
+in `SpikeStream.jl` against the same `shared_vectors.json` within the documented
+tolerance.
 
 ## License
 
