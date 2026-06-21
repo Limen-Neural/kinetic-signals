@@ -1,7 +1,26 @@
+// SPDX-License-Identifier: MIT OR Apache-2.0
+
 use kinetic_signals::{
     VolEstimator, compute_hawkes, compute_hurst, compute_shannon_entropy, compute_surprise,
     hawkes::HawkesParams, surprise::SurpriseParams,
 };
+
+#[cfg(feature = "sentry")]
+fn init_sentry() -> Option<sentry::ClientInitGuard> {
+    match std::env::var("SENTRY_DSN") {
+        Ok(dsn) if !dsn.is_empty() => {
+            let guard = sentry::init((
+                dsn,
+                sentry::ClientOptions {
+                    release: sentry::release_name!(),
+                    ..Default::default()
+                },
+            ));
+            Some(guard)
+        }
+        _ => None,
+    }
+}
 
 fn lcg_next(state: &mut u64) -> u64 {
     // Numerical Recipes LCG constants (good enough for a demo; not crypto-secure)
@@ -17,6 +36,9 @@ fn pseudo_random_f64(state: &mut u64) -> f64 {
 
 fn main() {
     println!("=== Kinetic Signals Demo v0.3.0 ===\n");
+
+    #[cfg(feature = "sentry")]
+    let _sentry_guard = init_sentry();
 
     demo_hurst();
     demo_hawkes();

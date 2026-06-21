@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT OR Apache-2.0
+
 //! Domain-agnostic surprise detection.
 //!
 //! Computes a normalized "surprise" score for a transition between two

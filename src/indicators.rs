@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT OR Apache-2.0
+
 /// Exponential Moving Average (EMA) for streaming data
 #[derive(Debug, Clone)]
 pub struct EMA {

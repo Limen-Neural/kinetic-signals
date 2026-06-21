@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT OR Apache-2.0
+
 //! # kinetic-signals
 //!
 //! Streaming feature extraction for high-velocity stochastic signals.
