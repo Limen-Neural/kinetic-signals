@@ -102,4 +102,3 @@ impl Real for f32 {
         self.min(other)
     }
 }
-

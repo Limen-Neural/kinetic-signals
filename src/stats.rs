@@ -11,7 +11,13 @@ pub struct SignalStats {
 pub fn compute_signal_stats(data: &[f64]) -> SignalStats {
     let n = data.len();
     if n == 0 {
-        return SignalStats { mean: 0.0, variance: 0.0, skewness: 0.0, kurtosis: 0.0, count: 0 };
+        return SignalStats {
+            mean: 0.0,
+            variance: 0.0,
+            skewness: 0.0,
+            kurtosis: 0.0,
+            count: 0,
+        };
     }
 
     let n_f = n as f64;

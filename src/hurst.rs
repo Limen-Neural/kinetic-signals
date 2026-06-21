@@ -45,8 +45,8 @@ where
         // Efficiently compute R/S for non-overlapping chunks
         for i in (0..=(n - tau)).step_by(tau) {
             let chunk: &[T] = &data[i..i + tau];
-            let mean: T = chunk.iter().copied().fold(T::zero(), |acc, x| acc + x)
-                / T::from_usize(tau);
+            let mean: T =
+                chunk.iter().copied().fold(T::zero(), |acc, x| acc + x) / T::from_usize(tau);
 
             let mut cumdev = T::zero();
             let mut max_dev = T::zero();
@@ -81,15 +81,20 @@ where
     let h = if log_n.len() < 2 {
         c(0.5)
     } else {
-        let n_mean = log_n.iter().copied().fold(T::zero(), |acc, x| acc + x)
-            / T::from_usize(log_n.len());
-        let rs_mean = log_rs.iter().copied().fold(T::zero(), |acc, x| acc + x)
-            / T::from_usize(log_rs.len());
+        let n_mean =
+            log_n.iter().copied().fold(T::zero(), |acc, x| acc + x) / T::from_usize(log_n.len());
+        let rs_mean =
+            log_rs.iter().copied().fold(T::zero(), |acc, x| acc + x) / T::from_usize(log_rs.len());
 
-        let num = log_n.iter().zip(log_rs.iter()).fold(T::zero(), |acc, (&x, &y)| {
-            acc + (x - n_mean) * (y - rs_mean)
-        });
-        let den = log_n.iter().fold(T::zero(), |acc, &x| acc + (x - n_mean).powi(2));
+        let num = log_n
+            .iter()
+            .zip(log_rs.iter())
+            .fold(T::zero(), |acc, (&x, &y)| {
+                acc + (x - n_mean) * (y - rs_mean)
+            });
+        let den = log_n
+            .iter()
+            .fold(T::zero(), |acc, &x| acc + (x - n_mean).powi(2));
 
         if den.abs() < c(1e-12) {
             c(0.5)

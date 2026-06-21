@@ -56,11 +56,7 @@ impl VolEstimator {
 
     /// Number of samples currently in the buffer.
     pub fn len(&self) -> usize {
-        if self.full {
-            self.cap
-        } else {
-            self.pos
-        }
+        if self.full { self.cap } else { self.pos }
     }
 
     /// True if the buffer is empty.
