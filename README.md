@@ -1,6 +1,7 @@
 # kinetic-signals
 
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/License-MIT%20OR%20Apache--2.0-blue.svg)](https://opensource.org/licenses/MIT)
+[![codecov](https://codecov.io/gh/Limen-Neural/kinetic-signals/branch/main/graph/badge.svg)](https://codecov.io/gh/Limen-Neural/kinetic-signals)
 
 Streaming feature extraction for high-velocity stochastic signals.
 
