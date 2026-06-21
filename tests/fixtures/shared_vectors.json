@@ -1,0 +1,44 @@
+{
+  "_comment": "Shared cross-language test vectors for kinetic-signals (Rust) and SpikeStream.jl (Julia). Tracks issue #3 / LIM-31. Both implementations must consume the SAME inputs and produce outputs within the documented ranges (and matching within tolerance once SpikeStream.jl validation is run against this file).",
+  "tolerance": 1e-6,
+  "vectors": {
+    "hurst": {
+      "input": { "data": "[i * 0.1 for i in 0..64]" },
+      "output_range": { "h": [0.0, 1.0] },
+      "notes": "Hurst exponent is clamped to [0, 1]. is_persistent = h > 0.52, is_antipersistent = h < 0.48."
+    },
+    "hawkes": {
+      "input": {
+        "event_times": [0.0, 0.01, 0.02, 0.03, 0.1, 0.5, 0.51, 0.52],
+        "params": { "mu": 0.1, "alpha": 0.5, "beta": 1.0, "dt": 0.001 }
+      },
+      "output_range": { "intensity": ["mu", "Inf"], "avg_excitation": [0.0, "Inf"] },
+      "notes": "intensity >= mu; avg_excitation >= 0; event_count == input length."
+    },
+    "surprise": {
+      "input": {
+        "current_value": 150.0,
+        "previous_value": 100.0,
+        "params": { "mu": 0.0, "sigma": 0.1, "dt": 0.001, "threshold": 3.0 }
+      },
+      "output_range": { "surprise": [0.0, "Inf"], "z_score": ["-Inf", "Inf"] },
+      "notes": "surprise == abs(z_score) >= 0; anomaly when surprise > threshold. Non-positive inputs yield a zeroed result."
+    },
+    "entropy": {
+      "input": {
+        "data": [1.0, 2.0, 2.0, 3.0, 3.0, 3.0, 4.0, 4.0, 5.0, 6.0],
+        "bins": 8
+      },
+      "output_range": { "shannon": [0.0, "ln(bins)"], "relative": [0.0, 1.0] },
+      "notes": "shannon in [0, ln(bins)]; relative in [0, 1]; bin_count <= bins."
+    },
+    "volatility": {
+      "input": {
+        "abs_log_returns": [0.01, 0.02, 0.015, 0.03, 0.012, 0.025, 0.018],
+        "window": 5
+      },
+      "output_range": { "rms": [0.0, 1.0] },
+      "notes": "Rolling RMS volatility sqrt(mean(r^2)) over the window, clamped to [0, 1]."
+    }
+  }
+}
