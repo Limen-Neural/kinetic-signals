@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM rust:1.85-slim AS builder
+FROM rust:1.88-slim AS builder
 
 WORKDIR /app
 
@@ -31,8 +31,9 @@ FROM debian:bookworm-slim
 
 WORKDIR /app
 
-# Copy binaries
-COPY --from=builder /app/target/release/examples/* /usr/local/bin/ 2>/dev/null || true
+# Copy binaries (ignore if no examples exist)
+RUN mkdir -p /usr/local/bin && \
+    cp /app/target/release/examples/* /usr/local/bin/ 2>/dev/null || true
 
 # Default command runs tests
 CMD ["cargo", "test", "--all-features"]
