@@ -2,9 +2,9 @@ name: Docker
 
 on:
   push:
-    branches: [main]
+    branches: [Main]
   pull_request:
-    branches: [main]
+    branches: [Main]
 
 jobs:
   docker:
@@ -26,8 +26,8 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Run tests inside container
-        run: docker run --rm kinetic-signals:test cargo test --all-features
-
-      - name: Verify build with sentry feature
-        run: docker run --rm kinetic-signals:test cargo check --features sentry
+      - name: Build and test in Docker (builder stage)
+        run: |
+          docker build --target builder -t kinetic-signals:builder .
+          docker run --rm kinetic-signals:builder cargo test --all-features
+          docker run --rm kinetic-signals:builder cargo check --features sentry
