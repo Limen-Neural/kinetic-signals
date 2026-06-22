@@ -1,0 +1,26 @@
+name: Sentry Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Create Sentry Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create Sentry Release
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: limen-neural
+          SENTRY_PROJECT: kinetic-signals
+        with:
+          environment: production
+          sourcemaps: ./target
+          version: ${{ github.ref_name }}
