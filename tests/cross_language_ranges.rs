@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT OR Apache-2.0
+
 //! Cross-language output-range parity checks (issue #3 / LIM-31).
 //!
 //! This test pins the documented output-range convention for `kinetic-signals`

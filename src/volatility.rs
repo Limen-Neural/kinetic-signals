@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT OR Apache-2.0
+
 //! Rolling RMS volatility estimator — zero-alloc, fixed-size ring buffer.
 
 /// Rolling RMS volatility estimator over a fixed window.

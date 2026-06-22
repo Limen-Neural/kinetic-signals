@@ -4,13 +4,21 @@ version = "0.3.0"
 edition = "2024"
 authors = ["Raul Montoya Cardenas"]
 description = "Streaming feature extraction for high-velocity stochastic signals."
-license = "GPL-3.0"
+license = "MIT OR Apache-2.0"
 repository = "https://github.com/Limen-Neural/kinetic-signals"
 readme = "README.md"
 keywords = ["signals", "time-series", "stochastic", "hawkes", "gbm"]
 categories = ["algorithms", "science"]
 
 [dependencies]
+sentry = { version = "0.48.2", optional = true }
+
+[dev-dependencies]
+serial_test = "3.0"
+
+[features]
+default = []
+sentry = ["dep:sentry"]
 
 [profile.release]
 opt-level = 3

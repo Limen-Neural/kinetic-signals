@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT OR Apache-2.0
+
 //! Deprecated financial-domain aliases for the generic [`crate::surprise`] module.
 //!
 //! The names in this module assumed a Geometric Brownian Motion (financial)
