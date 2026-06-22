@@ -4,9 +4,11 @@
 
 #![cfg(feature = "sentry")]
 
+use serial_test::serial;
 use std::env;
 
 #[test]
+#[serial]
 fn sentry_feature_compiles_and_initializes_with_dsn() {
     // Set a dummy DSN for the test
     // SAFETY: This is a test-only environment variable mutation. The test is
@@ -39,6 +41,7 @@ fn sentry_feature_compiles_and_initializes_with_dsn() {
 }
 
 #[test]
+#[serial]
 fn sentry_does_not_initialize_without_dsn() {
     // SAFETY: Test-only env var removal in single-threaded test context.
     unsafe {
@@ -47,7 +50,13 @@ fn sentry_does_not_initialize_without_dsn() {
 
     let guard = match env::var("SENTRY_DSN") {
         Ok(dsn) if !dsn.is_empty() => {
-            let g = sentry::init(dsn);
+            let g = sentry::init((
+                dsn,
+                sentry::ClientOptions {
+                    release: sentry::release_name!(),
+                    ..Default::default()
+                },
+            ));
             Some(g)
         }
         _ => None,
