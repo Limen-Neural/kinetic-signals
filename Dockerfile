@@ -32,8 +32,7 @@ FROM debian:bookworm-slim
 WORKDIR /app
 
 # Copy binaries (ignore if no examples exist)
-RUN mkdir -p /usr/local/bin && \
-    cp /app/target/release/examples/* /usr/local/bin/ 2>/dev/null || true
+COPY --from=builder /app/target/release/examples/ /usr/local/bin/
 
 # Default command runs tests
 CMD ["cargo", "test", "--all-features"]
