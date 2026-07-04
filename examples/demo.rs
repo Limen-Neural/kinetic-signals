@@ -18,7 +18,7 @@ fn pseudo_random_f64(state: &mut u64) -> f64 {
 }
 
 fn main() {
-    println!("=== Kinetic Signals Demo v0.3.0 ===\n");
+    println!("=== Kinetic Signals Demo v0.4.0 ===\n");
 
     #[cfg(feature = "sentry")]
     let _sentry_guard = kinetic_signals::init_sentry();
