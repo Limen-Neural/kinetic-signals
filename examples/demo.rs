@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT OR Apache-2.0
+
 use kinetic_signals::{
     VolEstimator, compute_hawkes, compute_hurst, compute_shannon_entropy, compute_surprise,
     hawkes::HawkesParams, surprise::SurpriseParams,
@@ -17,6 +19,9 @@ fn pseudo_random_f64(state: &mut u64) -> f64 {
 
 fn main() {
     println!("=== Kinetic Signals Demo v0.3.0 ===\n");
+
+    #[cfg(feature = "sentry")]
+    let _sentry_guard = kinetic_signals::init_sentry();
 
     demo_hurst();
     demo_hawkes();

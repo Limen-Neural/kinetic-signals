@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT OR Apache-2.0
+
 //! Backward-compatibility checks for the deprecated financial aliases (issue #4).
 //!
 //! The GBM-named items are deprecated but must keep working and must produce

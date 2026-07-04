@@ -1,12 +1,15 @@
 # kinetic-signals
 
+[![License: MIT OR Apache-2.0](https://img.shields.io/badge/License-MIT%20OR%20Apache--2.0-blue.svg)](https://opensource.org/licenses/MIT)
+[![codecov](https://codecov.io/gh/Limen-Neural/kinetic-signals/branch/main/graph/badge.svg)](https://codecov.io/gh/Limen-Neural/kinetic-signals)
+
 Streaming feature extraction for high-velocity stochastic signals.
 
 A high-performance, domain-agnostic Rust crate for computing streaming signal statistics, point-process intensity features, and anomaly metrics on stochastic time-series.
 
 ## Features
 
-- **Zero dependencies** - No external crates required
+- **Zero required dependencies** - No external crates by default; optional `sentry` feature available
 - **Hurst Exponent** - Detects long-term memory and persistence in time-series data
 - **Hawkes Process** - Models self-exciting event clusters in point-process streams
 - **Surprise** - Detects anomalous transition magnitudes via normalized log-ratio z-scores
@@ -115,7 +118,23 @@ tolerance.
 
 ## License
 
-GPL-3.0
+Licensed under either of
+
+- Apache License, Version 2.0 ([LICENSE-APACHE-2.0](LICENSE-APACHE-2.0) or <http://www.apache.org/licenses/LICENSE-2.0>)
+
+- MIT license ([LICENSE-MIT](LICENSE-MIT) or <http://opensource.org/licenses/MIT>)
+
+at your option.
+
+## Error monitoring (optional)
+
+You can opt in to error reporting by enabling the `sentry` feature and setting the `SENTRY_DSN` environment variable:
+
+```bash
+SENTRY_DSN=https://...@... cargo run --example demo --features sentry
+```
+
+Sentry is **never** initialized unless the feature is enabled and the DSN is present. No data is sent by default.
 
 ## Authors
 
