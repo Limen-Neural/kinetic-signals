@@ -81,6 +81,18 @@ Typical execution times (Ryzen 9 9950X):
 - Hawkes (10 events): ~5μs
 - Surprise: ~100ns
 
+## Upgrading from v0.3.x
+
+v0.4.0 removes the deprecated GBM aliases. Replace with the domain-agnostic names:
+
+| Removed (v0.3.x)                 | Use instead                |
+|----------------------------------|----------------------------|
+| `compute_gbm_surprise`           | `compute_surprise`         |
+| `compute_gbm_surprise_sequence`  | `compute_surprise_sequence`|
+| `GBMParams`                      | `SurpriseParams`           |
+| `GBMResult`                      | `SurpriseResult`           |
+| `gbm::detect_anomaly`            | `surprise::detect_anomaly` |
+
 ## Cross-language output ranges (SpikeStream.jl alignment)
 
 To keep experimental results consistent between this crate and the Julia
