@@ -5,23 +5,6 @@ use kinetic_signals::{
     hawkes::HawkesParams, surprise::SurpriseParams,
 };
 
-#[cfg(feature = "sentry")]
-fn init_sentry() -> Option<sentry::ClientInitGuard> {
-    match std::env::var("SENTRY_DSN") {
-        Ok(dsn) if !dsn.is_empty() => {
-            let guard = sentry::init((
-                dsn,
-                sentry::ClientOptions {
-                    release: sentry::release_name!(),
-                    ..Default::default()
-                },
-            ));
-            Some(guard)
-        }
-        _ => None,
-    }
-}
-
 fn lcg_next(state: &mut u64) -> u64 {
     // Numerical Recipes LCG constants (good enough for a demo; not crypto-secure)
     *state = state.wrapping_mul(6364136223846793005).wrapping_add(1);
@@ -38,7 +21,7 @@ fn main() {
     println!("=== Kinetic Signals Demo v0.3.0 ===\n");
 
     #[cfg(feature = "sentry")]
-    let _sentry_guard = init_sentry();
+    let _sentry_guard = kinetic_signals::init_sentry();
 
     demo_hurst();
     demo_hawkes();
