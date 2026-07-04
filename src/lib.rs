@@ -35,15 +35,7 @@
 //! let surprise = compute_surprise(150.0, 100.0, &params);
 //! ```
 //!
-//! ## Deprecated financial aliases
-//!
-//! Earlier releases exposed Geometric Brownian Motion (GBM) named items such as
-//! `compute_gbm_surprise`, `GBMParams`, and `GBMResult`. These remain available
-//! as deprecated aliases in [`gbm`] for backward compatibility and forward to
-//! the domain-agnostic names in [`surprise`].
-
 pub mod entropy;
-pub mod gbm;
 pub mod hawkes;
 pub mod hurst;
 pub mod indicators;
@@ -87,10 +79,6 @@ pub use surprise::{
 };
 pub use volatility::VolEstimator;
 
-/// Deprecated financial-domain aliases. Prefer the domain-agnostic names above.
-#[allow(deprecated)]
-pub use gbm::{GBMParams, GBMResult, compute_gbm_surprise, compute_gbm_surprise_sequence};
-
 pub mod prelude {
     pub use crate::entropy::*;
     pub use crate::hawkes::*;
@@ -99,9 +87,4 @@ pub mod prelude {
     pub use crate::stats::*;
     pub use crate::surprise::*;
     pub use crate::volatility::*;
-
-    #[allow(deprecated)]
-    pub use crate::gbm::{
-        GBMParams, GBMResult, compute_gbm_surprise, compute_gbm_surprise_sequence,
-    };
 }
