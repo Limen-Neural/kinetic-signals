@@ -68,6 +68,36 @@ Run the included demo:
 cargo run --example demo
 ```
 
+### Development
+
+**MSRV:** Rust >= 1.85 (edition 2024)
+
+```bash
+# Build and test
+cargo build
+cargo test
+
+# Lint and format
+cargo clippy
+cargo fmt --check
+
+# Run with sentry error reporting
+SENTRY_DSN=https://...@... cargo run --example demo --features sentry
+```
+
+**Test coverage** (requires `cargo-llvm-cov`):
+
+```bash
+cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
+```
+
+**Docker** (reproducible build):
+
+```bash
+docker build -t kinetic-signals .
+docker run --rm kinetic-signals
+```
+
 ### Numeric types
 
 Most APIs use `f64`. `compute_hurst` and the surprise helpers are generic and support `f32` and `f64`. `VolEstimator` consumes `f32` absolute log-returns and computes rolling RMS volatility.
