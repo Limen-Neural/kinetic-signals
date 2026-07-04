@@ -98,6 +98,7 @@ cargo llvm-cov --open
 Coverage reports are automatically generated and uploaded to [Codecov](https://codecov.io/gh/Limen-Neural/kinetic-signals) in CI via the [coverage workflow](.github/workflows/coverage.yml) on every push to `main` and in pull requests. Results are also available via the badge at the top of this README.
 
 **CI workflows:**
+
 - [Build & Test](.github/workflows/ci.yml) — fmt, clippy, build, test
 - [Coverage](.github/workflows/coverage.yml) — cargo-llvm-cov + Codecov upload
 - [Docker](.github/workflows/docker.yml) — containerized build + test
