@@ -1,4 +1,7 @@
-patch: false
+coverage:
+  patch:
+    default:
+      target: 0%
 
 ignore:
   - "docs/**"
