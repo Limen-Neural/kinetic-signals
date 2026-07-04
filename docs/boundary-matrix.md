@@ -60,7 +60,7 @@ Domain-agnostic streaming feature extraction for stochastic signals. Computes re
 
 ## Thread-safety
 
-All public types are `Send + Sync`. `VolEstimator` uses interior mutability via `Cell` (not `Sync`) — callers in concurrent contexts should wrap in `Mutex`. All compute functions are stateless and safe for parallel use.
+Most public types are `Send + Sync`. `VolEstimator` uses interior mutability via `Cell` (not `Sync`) — callers in concurrent contexts should wrap in `Mutex`. All compute functions are stateless and safe for parallel use.
 
 ## Domain leaks / migration risks
 
