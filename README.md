@@ -72,6 +72,12 @@ cargo run --example demo
 
 **MSRV:** Rust >= 1.85 (edition 2024)
 
+Related CI workflows (GitHub Actions):
+- Build/test/lint: [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
+- Coverage (Codecov upload): [`.github/workflows/coverage.yml`](.github/workflows/coverage.yml)
+- Docker build: [`.github/workflows/docker.yml`](.github/workflows/docker.yml)
+- Sentry release (optional): [`.github/workflows/sentry-release.yml`](.github/workflows/sentry-release.yml)
+
 ```bash
 # Build and test
 cargo build
@@ -90,6 +96,17 @@ SENTRY_DSN=https://...@... cargo run --example demo --features sentry
 ```bash
 cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
 ```
+
+### Observability
+
+#### Code coverage (Codecov)
+
+Coverage is uploaded from CI (see [`.github/workflows/coverage.yml`](.github/workflows/coverage.yml)) and published to Codecov.
+
+- The Codecov badge at the top of this README links to the latest `main` branch report.
+- For PRs, the Codecov check/summary in GitHub points to the diff/patch coverage report.
+
+If you generate `lcov.info` locally, you can upload it manually to Codecov (e.g., when running in a fork) or use it with local tooling that understands LCOV.
 
 **Docker** (reproducible build):
 
