@@ -99,5 +99,3 @@ fn volatility_rms_nonnegative() {
     assert!(rms >= 0.0, "rms must be non-negative: {rms}");
     assert!(rms.is_finite());
 }
-
-
