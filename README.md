@@ -116,6 +116,18 @@ The Rust side is verified by `tests/cross_language_ranges.rs`
 in `SpikeStream.jl` against the same `shared_vectors.json` within the documented
 tolerance.
 
+## Scope and ownership boundaries
+
+This crate is **domain-agnostic**. It computes streaming signal features (Hurst, Hawkes, surprise, volatility, entropy, indicators) without assuming a specific application domain.
+
+| Does belong | Does NOT belong here |
+|-------------|---------------------|
+| Generic signal statistics | Spike-train analysis (→ SpikeStream.jl) |
+| Point-process intensity | SNN runtime / neuron models (→ neuromod) |
+| Anomaly detection primitives | Financial domain adapters (→ DendriteTrader.jl) |
+
+See [`docs/boundary-matrix.md`](docs/boundary-matrix.md) for the full boundary matrix.
+
 ## License
 
 Licensed under either of
