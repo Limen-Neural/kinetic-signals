@@ -64,7 +64,7 @@ All public types are `Send + Sync`. `VolEstimator` uses interior mutability via 
 
 ## Domain leaks / migration risks
 
-- **None currently.** The deprecated GBM aliases were removed in v0.4.0 (PR #17).
+- **None currently.** The deprecated GBM aliases are planned for removal in v0.4.0 (PR #17).
 - Future domain-specific features (e.g., financial Greeks, spike ISI) should be added in consumer crates, not here.
 - If a feature is requested that requires domain knowledge, redirect to the appropriate consumer crate.
 
