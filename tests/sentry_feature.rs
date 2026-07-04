@@ -12,7 +12,10 @@ use serial_test::serial;
 #[serial]
 fn sentry_feature_compiles_and_initializes_with_dsn() {
     temp_env::with_vars(
-        [("SENTRY_DSN", Some("https://test@example.ingest.sentry.io/123456"))],
+        [(
+            "SENTRY_DSN",
+            Some("https://test@example.ingest.sentry.io/123456"),
+        )],
         || {
             let guard = kinetic_signals::init_sentry();
             assert!(guard.is_some(), "Sentry should initialize when DSN is set");
