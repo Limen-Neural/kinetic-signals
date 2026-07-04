@@ -24,7 +24,7 @@ COPY examples ./examples
 COPY tests ./tests
 
 # Build with all features
-RUN cargo build --release --all-features
+RUN cargo build --release --all-features --examples
 
 # Runtime image
 FROM debian:bookworm-slim
