@@ -15,7 +15,7 @@ COPY Cargo.toml ./
 # Create dummy main to cache dependencies
 RUN mkdir src && \
     echo "fn main() {}" > src/lib.rs && \
-    cargo build --release && \
+    cargo build --release --all-features && \
     rm -rf src
 
 # Copy actual source
@@ -34,5 +34,5 @@ WORKDIR /app
 # Copy binaries (ignore if no examples exist)
 COPY --from=builder /app/target/release/examples/ /usr/local/bin/
 
-# Default command runs tests
-CMD ["cargo", "test", "--all-features"]
+# Default command runs the demo example
+CMD ["demo"]

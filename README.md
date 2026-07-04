@@ -9,7 +9,7 @@ A high-performance, domain-agnostic Rust crate for computing streaming signal st
 
 ## Features
 
-- **Zero dependencies** - No external crates required
+- **Zero required dependencies** - No external crates by default; optional `sentry` feature available
 - **Hurst Exponent** - Detects long-term memory and persistence in time-series data
 - **Hawkes Process** - Models self-exciting event clusters in point-process streams
 - **Surprise** - Detects anomalous transition magnitudes via normalized log-ratio z-scores

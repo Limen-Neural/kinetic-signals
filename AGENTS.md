@@ -1,6 +1,6 @@
 # kinetic-signals
 
-A zero-dependency Rust library crate for streaming signal feature extraction (Hurst exponent, Hawkes process, GBM surprise, volatility, entropy, indicators, stats). Library code lives in `src/`; a runnable demo lives in `examples/demo.rs`.
+A Rust library crate (zero required dependencies by default) for streaming signal feature extraction (Hurst exponent, Hawkes process, GBM surprise, volatility, entropy, indicators, stats). Library code lives in `src/`; a runnable demo lives in `examples/demo.rs`.
 
 ## Cursor Cloud specific instructions
 
@@ -11,4 +11,4 @@ A zero-dependency Rust library crate for streaming signal feature extraction (Hu
   - Lint: `cargo clippy`
   - Format check: `cargo fmt --check` (note: the committed source currently has minor formatting that does not match `rustfmt`, so this check reports a diff; this is pre-existing and not caused by setup)
   - Run the app/demo: `cargo run --example demo`
-- The crate has zero external dependencies, so there is no network access needed for building once the toolchain is present.
+- The default feature set has zero external dependencies and needs no network access once the toolchain is present. Building with `--all-features` pulls in the optional `sentry` crate, and running tests requires the `serial_test` dev-dependency — both need network access on first build.
