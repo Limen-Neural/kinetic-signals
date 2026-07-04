@@ -105,3 +105,24 @@ pub mod prelude {
         GBMParams, GBMResult, compute_gbm_surprise, compute_gbm_surprise_sequence,
     };
 }
+
+/// Compile-time assertion: all public types are `Send + Sync`.
+/// Fails at `cargo check`, not just `cargo test`.
+/// If this fails, update docs/boundary-matrix.md thread-safety section.
+#[cfg(test)]
+mod send_sync_check {
+    fn assert_send_sync<T: Send + Sync>() {}
+    fn _check() {
+        assert_send_sync::<super::VolEstimator>();
+        assert_send_sync::<super::HurstResult>();
+        assert_send_sync::<super::HawkesResult>();
+        assert_send_sync::<super::HawkesParams>();
+        assert_send_sync::<super::surprise::SurpriseResult>();
+        assert_send_sync::<super::surprise::SurpriseParams>();
+        assert_send_sync::<super::EntropyResult>();
+        assert_send_sync::<super::SignalStats>();
+        assert_send_sync::<super::EMA>();
+        assert_send_sync::<super::SMA>();
+        assert_send_sync::<super::ZScore>();
+    }
+}
