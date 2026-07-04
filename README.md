@@ -88,7 +88,7 @@ SENTRY_DSN=https://...@... cargo run --example demo --features sentry
 **Test coverage** (requires `cargo-llvm-cov`):
 
 ```bash
-cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
+cargo llvm-cov --open
 ```
 
 **Docker** (reproducible build):
