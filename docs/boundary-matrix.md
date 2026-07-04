@@ -54,7 +54,7 @@ Domain-agnostic streaming feature extraction for stochastic signals. Computes re
 
 | Consumer | Integration |
 |----------|-------------|
-| SpikeStream.jl | Uses `compute_hurst`, `compute_hawkes`, `surprise` via FFI or Julia bindings. Shares `tests/fixtures/shared_vectors.json` for cross-language parity. |
+| SpikeStream.jl | Uses `compute_hurst`, `compute_hawkes`, `compute_surprise` via FFI or Julia bindings. Shares `tests/fixtures/shared_vectors.json` for cross-language parity. |
 | neuromod | May re-export `compute_hurst` / `compute_hawkes` for SNN signal analysis. No direct dependency — re-export only. |
 | DendriteTrader.jl | Can use surprise / volatility for financial signal detection. Domain adapter layer lives in DendriteTrader, not here. |
 
