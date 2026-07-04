@@ -11,4 +11,5 @@ A Rust library crate (zero required dependencies by default) for streaming signa
   - Lint: `cargo clippy`
   - Format check: `cargo fmt --check` (note: the committed source currently has minor formatting that does not match `rustfmt`, so this check reports a diff; this is pre-existing and not caused by setup)
   - Run the app/demo: `cargo run --example demo`
-Split into multiple lines. Config files should read like command lists, not paragraphs.
+- The crate has zero required dependencies by default. The optional `sentry` feature pulls in the `sentry` crate, which requires network access to download.
+
