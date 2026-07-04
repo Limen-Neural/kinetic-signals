@@ -99,3 +99,21 @@ fn volatility_rms_nonnegative() {
     assert!(rms >= 0.0, "rms must be non-negative: {rms}");
     assert!(rms.is_finite());
 }
+
+/// Compile-time assertion: all public types are `Send + Sync`.
+/// If this fails to compile, the boundary-matrix thread-safety claim is stale.
+#[test]
+fn public_types_are_send_sync() {
+    fn assert_send_sync<T: Send + Sync>() {}
+    assert_send_sync::<kinetic_signals::VolEstimator>();
+    assert_send_sync::<kinetic_signals::HurstResult>();
+    assert_send_sync::<kinetic_signals::HawkesResult>();
+    assert_send_sync::<kinetic_signals::HawkesParams>();
+    assert_send_sync::<kinetic_signals::surprise::SurpriseResult>();
+    assert_send_sync::<kinetic_signals::surprise::SurpriseParams>();
+    assert_send_sync::<kinetic_signals::EntropyResult>();
+    assert_send_sync::<kinetic_signals::SignalStats>();
+    assert_send_sync::<kinetic_signals::EMA>();
+    assert_send_sync::<kinetic_signals::SMA>();
+    assert_send_sync::<kinetic_signals::ZScore>();
+}

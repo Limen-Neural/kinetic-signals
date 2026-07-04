@@ -64,7 +64,7 @@ All public types are `Send + Sync`. `VolEstimator` requires `&mut self` for muta
 
 ## Domain leaks / migration risks
 
-- **None currently.** The deprecated GBM aliases were removed in v0.4.0 (PR #17).
+- **Deprecated GBM aliases:** Planned for removal in v0.4.0 (PR #17). Once merged, the README migration table will also be removed.
 - **SpikeStream.jl transitional proxies:** SpikeStream.jl issues #8, #9, #11 reference financial proxy functions that pointed to kinetic-signals. These proxies should be updated to use the domain-agnostic names (`compute_surprise`, `SurpriseParams`) after v0.4.0.
 - Future domain-specific features (e.g., financial Greeks, spike ISI) should be added in consumer crates, not here.
 - If a feature is requested that requires domain knowledge, redirect to the appropriate consumer crate.
