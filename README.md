@@ -116,7 +116,7 @@ The Rust side is verified by `tests/cross_language_ranges.rs`
 in `SpikeStream.jl` against the same `shared_vectors.json` within the documented
 tolerance.
 
-## Scope and ownership boundaries
+## Scope and Ownership Boundaries
 
 This crate is **domain-agnostic**. It computes streaming signal features (Hurst, Hawkes, surprise, volatility, entropy, indicators) without assuming a specific application domain.
 
