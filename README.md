@@ -92,7 +92,7 @@ SENTRY_DSN=https://...@... cargo run --example demo --features sentry
 cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
 
 # Open HTML report locally
-cargo llvm-cov --open
+cargo llvm-cov --all-features --workspace --open
 ```
 
 Coverage reports are automatically generated and uploaded to [Codecov](https://codecov.io/gh/Limen-Neural/kinetic-signals) in CI via the [coverage workflow](.github/workflows/coverage.yml) on every push to `main` and in pull requests. Results are also available via the badge at the top of this README.
