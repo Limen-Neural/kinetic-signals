@@ -9,39 +9,39 @@
 use serial_test::serial;
 use std::env;
 
-#[test]
-#[serial]
-fn sentry_feature_compiles_and_initializes_with_dsn() {
-    // Set a dummy DSN for the test
-    // SAFETY: This is a test-only environment variable mutation. The test is
-    // single-threaded and the variable is only read within the same test.
-    unsafe {
-        env::set_var("SENTRY_DSN", "https://test@example.ingest.sentry.io/123456");
-    }
-
-    // This should not panic and should return a guard when DSN is present
-    let guard = match env::var("SENTRY_DSN") {
+/// Try to initialize Sentry from the `SENTRY_DSN` env var.
+/// Returns `Some(guard)` if the DSN is set and non-empty, `None` otherwise.
+fn try_init_sentry() -> Option<sentry::ClientInitGuard> {
+    match env::var("SENTRY_DSN") {
         Ok(dsn) if !dsn.is_empty() => {
-            let g = sentry::init((
+            let guard = sentry::init((
                 dsn,
                 sentry::ClientOptions {
                     release: sentry::release_name!(),
                     ..Default::default()
                 },
             ));
-            Some(g)
+            Some(guard)
         }
         _ => None,
-    };
+    }
+}
 
-    // Note: In test environments without a real Sentry backend, init may return
-    // a no-op guard. The important assertion is that the feature compiles and
-    // the guard logic executes without panicking when DSN is present.
-    // We accept either Some or None here as the test environment may not fully
-    // initialize Sentry.
-    let _ = guard; // Guard is created successfully if we reach this line
+#[test]
+#[serial]
+fn sentry_feature_compiles_and_initializes_with_dsn() {
+    // SAFETY: Test-only env var mutation in single-threaded context.
+    unsafe {
+        env::set_var("SENTRY_DSN", "https://test@example.ingest.sentry.io/123456");
+    }
 
-    // Clean up env var to avoid leaking state
+    let guard = try_init_sentry();
+    // Guard is created successfully if we reach this line.
+    // In test environments without a real Sentry backend, init may return
+    // a no-op guard — the important thing is it doesn't panic.
+    let _ = guard;
+
+    // SAFETY: Test-only env var cleanup.
     unsafe {
         env::remove_var("SENTRY_DSN");
     }
@@ -50,24 +50,11 @@ fn sentry_feature_compiles_and_initializes_with_dsn() {
 #[test]
 #[serial]
 fn sentry_does_not_initialize_without_dsn() {
-    // SAFETY: Test-only env var removal in single-threaded test context.
+    // SAFETY: Test-only env var removal in single-threaded context.
     unsafe {
         env::remove_var("SENTRY_DSN");
     }
 
-    let guard = match env::var("SENTRY_DSN") {
-        Ok(dsn) if !dsn.is_empty() => {
-            let g = sentry::init((
-                dsn,
-                sentry::ClientOptions {
-                    release: sentry::release_name!(),
-                    ..Default::default()
-                },
-            ));
-            Some(g)
-        }
-        _ => None,
-    };
-
+    let guard = try_init_sentry();
     assert!(guard.is_none(), "Sentry should not initialize without DSN");
 }
