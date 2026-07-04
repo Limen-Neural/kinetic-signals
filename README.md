@@ -75,7 +75,7 @@ cargo run --example demo
 ```bash
 # Build and test
 cargo build
-cargo test
+cargo test --all-features
 
 # Lint and format
 cargo clippy --all-targets --all-features
