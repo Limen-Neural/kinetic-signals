@@ -4,9 +4,9 @@ FROM rust:1.88-slim AS builder
 WORKDIR /app
 
 # Install build dependencies
-RUN apt-get update && apt-get install -y \
-    pkg-config \
-    libssl-dev \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    pkg-config=1.8.1-1 \
+    libssl-dev=3.0.20-1~deb12u2 \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy manifests
@@ -32,8 +32,8 @@ RUN cargo build --release --all-features --examples
 FROM debian:bookworm-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libssl3 \
-    ca-certificates \
+    libssl3=3.0.20-1~deb12u2 \
+    ca-certificates=20230311+deb12u1 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -r appuser && useradd -r -g appuser appuser

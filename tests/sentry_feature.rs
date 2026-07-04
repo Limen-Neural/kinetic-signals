@@ -31,6 +31,8 @@ fn try_init_sentry() -> Option<sentry::ClientInitGuard> {
 #[serial]
 fn sentry_feature_compiles_and_initializes_with_dsn() {
     // SAFETY: Test-only env var mutation in single-threaded context.
+    // Required by Rust edition 2024 — env::set_var is unsafe.
+    #[allow(unsafe_code)]
     unsafe {
         env::set_var("SENTRY_DSN", "https://test@example.ingest.sentry.io/123456");
     }
@@ -42,6 +44,7 @@ fn sentry_feature_compiles_and_initializes_with_dsn() {
     let _ = guard;
 
     // SAFETY: Test-only env var cleanup.
+    #[allow(unsafe_code)]
     unsafe {
         env::remove_var("SENTRY_DSN");
     }
@@ -51,6 +54,7 @@ fn sentry_feature_compiles_and_initializes_with_dsn() {
 #[serial]
 fn sentry_does_not_initialize_without_dsn() {
     // SAFETY: Test-only env var removal in single-threaded context.
+    #[allow(unsafe_code)]
     unsafe {
         env::remove_var("SENTRY_DSN");
     }
