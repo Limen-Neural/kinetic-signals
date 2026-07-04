@@ -73,7 +73,7 @@ cargo run --example demo
 **MSRV:** Rust >= 1.85 (edition 2024)
 
 ```bash
-# Build and test
+# Build and test (--all-features requires network for sentry crate download)
 cargo build
 cargo test --all-features
 
@@ -88,10 +88,20 @@ SENTRY_DSN=https://...@... cargo run --example demo --features sentry
 **Test coverage** (requires `cargo-llvm-cov`):
 
 ```bash
+# Generate lcov report for CI
+cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
+
+# Open HTML report locally
 cargo llvm-cov --open
 ```
 
-Coverage reports are automatically generated and uploaded to Codecov in CI via the `.github/workflows/coverage.yml` workflow on every push to `main` and in pull requests. View results at the [Codecov dashboard](https://codecov.io/gh/Limen-Neural/kinetic-signals) or check the badge at the top of this README.
+Coverage reports are automatically generated and uploaded to [Codecov](https://codecov.io/gh/Limen-Neural/kinetic-signals) in CI via the [coverage workflow](.github/workflows/coverage.yml) on every push to `main` and in pull requests. Results are also available via the badge at the top of this README.
+
+**CI workflows:**
+- [Build & Test](.github/workflows/ci.yml) — fmt, clippy, build, test
+- [Coverage](.github/workflows/coverage.yml) — cargo-llvm-cov + Codecov upload
+- [Docker](.github/workflows/docker.yml) — containerized build + test
+- [Sentry Release](.github/workflows/sentry-release.yml) — creates Sentry release on tag push
 
 **Docker** (reproducible build):
 
