@@ -1,3 +1,5 @@
+patch: false
+
 ignore:
   - "docs/**"
   - "*.md"
