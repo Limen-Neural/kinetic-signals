@@ -78,7 +78,7 @@ cargo build
 cargo test
 
 # Lint and format
-cargo clippy
+cargo clippy --all-targets --all-features
 cargo fmt --check
 
 # Run with sentry error reporting
