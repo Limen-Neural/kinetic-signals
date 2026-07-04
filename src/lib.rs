@@ -108,6 +108,7 @@ pub mod prelude {
 
 /// Compile-time assertion: all public types are `Send + Sync`.
 /// If this fails, update docs/boundary-matrix.md thread-safety section.
+/// MAINTENANCE: Add new public types here when they are added to any module.
 fn _assert_send_sync() {
     fn assert_send_sync<T: Send + Sync>() {}
     assert_send_sync::<VolEstimator>();
