@@ -39,7 +39,7 @@ Domain-agnostic streaming feature extraction for stochastic signals. Computes re
 |------------|--------|
 | `sentry` (optional) | Error monitoring, feature-gated |
 | `temp-env` (dev) | Safe env var testing |
-| `serial_test` (dev) | Test serialization |
+| `serial_test` (dev) | Serial test execution (prevents race conditions in env var tests) |
 
 ### Forbidden (by design)
 
@@ -60,11 +60,12 @@ Domain-agnostic streaming feature extraction for stochastic signals. Computes re
 
 ## Thread-safety
 
-All public types are `Send + Sync`. `VolEstimator` requires `&mut self` for mutation, so concurrent writes are prevented by the borrow checker. All compute functions are stateless and safe for parallel use.
+All public types are `Send + Sync`. `VolEstimator` requires `&mut self` for mutation (fields: `Vec<f32>`, `usize`, `bool`), so concurrent writes are prevented by the borrow checker. All compute functions are stateless and safe for parallel use.
 
 ## Domain leaks / migration risks
 
-- **None currently.** The deprecated GBM aliases are planned for removal in v0.4.0 (PR #17).
+- **None currently.** The deprecated GBM aliases were removed in v0.4.0 (PR #17).
+- **SpikeStream.jl transitional proxies:** SpikeStream.jl issues #8, #9, #11 reference financial proxy functions that pointed to kinetic-signals. These proxies should be updated to use the domain-agnostic names (`compute_surprise`, `SurpriseParams`) after v0.4.0.
 - Future domain-specific features (e.g., financial Greeks, spike ISI) should be added in consumer crates, not here.
 - If a feature is requested that requires domain knowledge, redirect to the appropriate consumer crate.
 
@@ -73,5 +74,5 @@ All public types are `Send + Sync`. `VolEstimator` requires `&mut self` for muta
 1. PR #12 (dual-license + sentry) — merged
 2. PR #16 (README dev section) — open
 3. PR #17 (remove deprecated aliases) — open
-4. This document (PR #18) — open
+4. This document (PR #19) — open
 5. crates.io publishing — deferred until repo quality is satisfactory
