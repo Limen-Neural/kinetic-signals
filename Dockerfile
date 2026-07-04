@@ -36,10 +36,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+
 WORKDIR /app
 
 # Copy demo binary
 COPY --from=builder /app/target/release/examples/demo /usr/local/bin/demo
+
+USER appuser
 
 # Default command runs the demo example
 CMD ["demo"]
