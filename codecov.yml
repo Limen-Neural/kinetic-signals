@@ -1,0 +1,6 @@
+ignore:
+  - "docs/**"
+  - "*.md"
+  - ".github/**"
+  - "examples/**"
+  - "tests/fixtures/**"
