@@ -15,10 +15,7 @@ fn sentry_feature_compiles_and_initializes_with_dsn() {
         [("SENTRY_DSN", Some("https://test@example.ingest.sentry.io/123456"))],
         || {
             let guard = kinetic_signals::init_sentry();
-            // Guard is created successfully if we reach this line.
-            // In test environments without a real Sentry backend, init may return
-            // a no-op guard — the important thing is it doesn't panic.
-            let _ = guard;
+            assert!(guard.is_some(), "Sentry should initialize when DSN is set");
         },
     );
 }

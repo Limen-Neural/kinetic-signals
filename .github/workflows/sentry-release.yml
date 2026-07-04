@@ -18,6 +18,10 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Compute version
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
       - name: Create Sentry Release
         uses: getsentry/action-release@a74facf8a080ecbdf1cb355f16743530d712abb7 # v1.11.0
         env:
@@ -26,4 +30,4 @@ jobs:
           SENTRY_PROJECT: kinetic-signals
         with:
           environment: production
-          version: kinetic-signals@${{ github.ref_name }}
+          version: kinetic-signals@${{ steps.version.outputs.version }}
