@@ -60,11 +60,12 @@ Domain-agnostic streaming feature extraction for stochastic signals. Computes re
 
 ## Thread-safety
 
-All public types are `Send + Sync`. `VolEstimator` uses interior mutability via `Cell` (not `Sync`) — callers in concurrent contexts should wrap in `Mutex`. All compute functions are stateless and safe for parallel use.
+All public types are `Send + Sync` (no interior mutability). `VolEstimator` mutates through `&mut self`; if you need to update a single instance from multiple threads, use normal Rust synchronization (e.g., wrap it in a `Mutex`) or keep per-thread estimators. Pure compute functions are stateless and safe for parallel use.
 
 ## Domain leaks / migration risks
 
-- **None currently.** The deprecated GBM aliases were removed in v0.4.0 (PR #17).
+- **Transitional financial proxies (migration risk):** GBM-named aliases (`GBMParams`, `GBMResult`, `compute_gbm_surprise*`) are still publicly re-exported in v0.3.x as deprecated compatibility shims. They should remain thin name-only forwards to the generic API and are planned for removal in a future release once downstream consumers migrate.
+- **SpikeStream.jl migration open question:** SpikeStream.jl issues reference transitional financial proxy naming during the migration away from GBM terminology; ensure this crate does not accrete new financial semantics while supporting that transition.
 - Future domain-specific features (e.g., financial Greeks, spike ISI) should be added in consumer crates, not here.
 - If a feature is requested that requires domain knowledge, redirect to the appropriate consumer crate.
 
