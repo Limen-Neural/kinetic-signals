@@ -14,7 +14,7 @@ COPY Cargo.toml ./
 
 # Create dummy main to cache dependencies
 RUN mkdir src && \
-    echo "fn main() {}" > src/lib.rs && \
+    echo "" > src/lib.rs && \
     cargo build --release --all-features && \
     rm -rf src
 
@@ -29,10 +29,15 @@ RUN cargo build --release --all-features
 # Runtime image
 FROM debian:bookworm-slim
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libssl3 \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
-# Copy binaries (ignore if no examples exist)
-COPY --from=builder /app/target/release/examples/ /usr/local/bin/
+# Copy demo binary
+COPY --from=builder /app/target/release/examples/demo /usr/local/bin/demo
 
 # Default command runs the demo example
 CMD ["demo"]
