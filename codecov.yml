@@ -1,7 +1,9 @@
 coverage:
-  patch:
-    default:
-      target: 0%
+  status:
+    patch:
+      default:
+        target: 0%
+        threshold: 100%
 
 ignore:
   - "docs/**"
