@@ -79,7 +79,7 @@ cargo test --all-features
 
 # Lint and format
 cargo clippy --all-targets --all-features
-cargo fmt --check
+cargo fmt
 
 # Run with sentry error reporting
 SENTRY_DSN=https://...@... cargo run --example demo --features sentry
