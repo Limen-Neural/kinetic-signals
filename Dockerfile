@@ -16,7 +16,9 @@ COPY Cargo.toml ./
 RUN mkdir src && \
     echo "" > src/lib.rs && \
     cargo build --release --all-features && \
-    rm -rf src
+    rm -rf src target/release/.fingerprint/kinetic[-_]signals* \
+           target/release/deps/libkinetic[-_]signals* \
+           target/release/deps/kinetic[-_]signals*
 
 # Copy actual source
 COPY src ./src

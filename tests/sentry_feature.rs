@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT OR Apache-2.0
+
 //! Tests for the optional Sentry feature (issue #11).
 //! These tests verify that Sentry initialization only occurs when the feature
 //! flag is active and a DSN is provided.
@@ -38,6 +40,11 @@ fn sentry_feature_compiles_and_initializes_with_dsn() {
     // We accept either Some or None here as the test environment may not fully
     // initialize Sentry.
     let _ = guard; // Guard is created successfully if we reach this line
+
+    // Clean up env var to avoid leaking state
+    unsafe {
+        env::remove_var("SENTRY_DSN");
+    }
 }
 
 #[test]
