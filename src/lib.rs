@@ -88,3 +88,24 @@ pub mod prelude {
     pub use crate::surprise::*;
     pub use crate::volatility::*;
 }
+
+/// Compile-time assertion: all public types are `Send + Sync`.
+/// If this fails, update docs/boundary-matrix.md thread-safety section.
+/// MAINTENANCE: Add new public types here when they are added to any module.
+fn _assert_send_sync() {
+    fn assert_send_sync<T: Send + Sync>() {}
+    assert_send_sync::<VolEstimator>();
+    assert_send_sync::<HurstResult>();
+    assert_send_sync::<HurstResult<f32>>();
+    assert_send_sync::<HawkesResult>();
+    assert_send_sync::<HawkesParams>();
+    assert_send_sync::<surprise::SurpriseResult>();
+    assert_send_sync::<surprise::SurpriseResult<f32>>();
+    assert_send_sync::<surprise::SurpriseParams>();
+    assert_send_sync::<surprise::SurpriseParams<f32>>();
+    assert_send_sync::<EntropyResult>();
+    assert_send_sync::<SignalStats>();
+    assert_send_sync::<EMA>();
+    assert_send_sync::<SMA>();
+    assert_send_sync::<ZScore>();
+}
