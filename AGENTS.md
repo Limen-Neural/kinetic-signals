@@ -14,6 +14,7 @@ Part of the [Limen-Neural](https://github.com/Limen-Neural) ecosystem. See [`doc
 | `tests/fixtures/shared_vectors.json` | Shared test vectors for SpikeStream.jl parity |
 | `docs/boundary-matrix.md` | Architecture ownership and dependency boundaries |
 | `REVIEW.md` | Code review guidelines and bot rules |
+| `AGENTS.md` | Agent instructions (this file) |
 | `.github/workflows/` | CI/CD pipelines |
 
 ## Dependencies

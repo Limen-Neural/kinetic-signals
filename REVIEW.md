@@ -20,7 +20,7 @@ This document defines code review standards for the `kinetic-signals` crate.
 
 ### Out-of-scope
 
-`.beads/`, IDE configs (`.idea/`, `.cursor/`, `.vscode/`), `Cargo.lock` (library crate).
+`.beads/`, `.mimocode/`, `.kilo/`, IDE configs (`.idea/`, `.cursor/`, `.vscode/`), `Cargo.lock` (library crate).
 
 ## Bot review rules
 
@@ -78,7 +78,7 @@ Use [Conventional Commits](https://www.conventionalcommits.org/):
 
 When removing or renaming public items:
 
-1. Bump the major version (pre-1.0: `0.X.0` → `0.(X+1).0`; post-1.0: `X.Y.Z` → `(X+1).0.0`)
+1. Bump the version (pre-1.0: minor `0.X.0` → `0.(X+1).0`; post-1.0: major `X.Y.Z` → `(X+1).0.0`)
 2. Add migration guide to README
 3. Update `docs/boundary-matrix.md` if applicable
 
