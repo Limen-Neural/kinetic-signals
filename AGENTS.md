@@ -72,7 +72,7 @@ SENTRY_DSN=https://...@... cargo run --example demo --features sentry
 - **Formatting:** `cargo fmt` (rustfmt)
 - **Linting:** `cargo clippy --all-targets --all-features -- -D warnings`
 - **Comments:** No comments unless the reason is non-obvious. Never explain what the code does.
-- **Headers:** All source files include `// SPDX-License-Identifier: MIT OR Apache-2.0` (Software Package Data Exchange license identifier)
+- **Headers:** All source files include `// SPDX-License-Identifier: MIT OR Apache-2.0` (standard license identifier header)
 - **Unsafe:** Avoid. Edition 2024 marks `env::set_var`/`env::remove_var` as unsafe — use `temp-env` crate in tests.
 
 ## Testing
@@ -87,4 +87,4 @@ SENTRY_DSN=https://...@... cargo run --example demo --features sentry
 - **Naming:** Conventional commits — `feat:`, `fix:`, `docs:`, `chore:`, `refactor:`
 - **Scope:** One issue per PR; multi-issue PRs require justification in the PR description
 - **Breaking changes:** Bump version for removed/renamed public items (see REVIEW.md for semver rules)
-- **Required:** All CI checks must pass and zero unresolved review threads before merge; exceptions require maintainer approval
+- **Required:** All CI checks must pass and zero unresolved review threads before merge. Exceptions: docs-only PRs may skip coverage checks; maintainer approval required for any override.
