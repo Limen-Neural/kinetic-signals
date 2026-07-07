@@ -78,7 +78,7 @@ Use [Conventional Commits](https://www.conventionalcommits.org/):
 
 When removing or renaming public items:
 
-1. Bump the minor version (pre-1.0: `0.X.0` → `0.(X+1).0`; post-1.0: `X.Y.0` → `X.(Y+1).0`)
+1. Bump the major version (pre-1.0: `0.X.0` → `0.(X+1).0`; post-1.0: `X.Y.Z` → `(X+1).0.0`)
 2. Add migration guide to README
 3. Update `docs/boundary-matrix.md` if applicable
 
