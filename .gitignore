@@ -2,4 +2,8 @@
 /.idea
 /.junie
 /.beads
+/.mimocode
+/.kilo
+/.cursor
+/.vscode
 Cargo.lock

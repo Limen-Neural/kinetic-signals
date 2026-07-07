@@ -8,11 +8,12 @@ Part of the [Limen-Neural](https://github.com/Limen-Neural) ecosystem. See [`doc
 
 | Path | Purpose |
 |------|---------|
-| `src/` | Library code (7 public modules + private `real` trait) |
+| `src/` | Library code (all public modules + private `real` trait) |
 | `examples/demo.rs` | Runnable demo covering all major APIs |
 | `tests/` | Integration tests (cross-language parity, sentry feature) |
 | `tests/fixtures/shared_vectors.json` | Shared test vectors for SpikeStream.jl parity |
 | `docs/boundary-matrix.md` | Architecture ownership and dependency boundaries |
+| `REVIEW.md` | Code review guidelines and bot rules |
 | `.github/workflows/` | CI/CD pipelines |
 
 ## Dependencies
@@ -70,8 +71,8 @@ SENTRY_DSN=https://...@... cargo run --example demo --features sentry
 
 - **Formatting:** `cargo fmt` (rustfmt)
 - **Linting:** `cargo clippy --all-targets --all-features -- -D warnings`
-- **Comments:** No comments unless the WHY is non-obvious. Never explain WHAT.
-- **Headers:** All source files include `// SPDX-License-Identifier: MIT OR Apache-2.0`
+- **Comments:** No comments unless the reason is non-obvious. Never explain what the code does.
+- **Headers:** All source files include `// SPDX-License-Identifier: MIT OR Apache-2.0` (Software Package Data Exchange license identifier)
 - **Unsafe:** Avoid. Edition 2024 marks `env::set_var`/`env::remove_var` as unsafe — use `temp-env` crate in tests.
 
 ## Testing
@@ -84,6 +85,6 @@ SENTRY_DSN=https://...@... cargo run --example demo --features sentry
 ## PR instructions
 
 - **Naming:** Conventional commits — `feat:`, `fix:`, `docs:`, `chore:`, `refactor:`
-- **Scope:** One issue per PR when possible
-- **Breaking changes:** Bump version for removed/renamed public items
-- **Required:** All CI checks must pass, zero unresolved review threads
+- **Scope:** One issue per PR; multi-issue PRs require justification in the PR description
+- **Breaking changes:** Bump version for removed/renamed public items (see REVIEW.md for semver rules)
+- **Required:** All CI checks must pass and zero unresolved review threads before merge; exceptions require maintainer approval

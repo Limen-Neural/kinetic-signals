@@ -20,7 +20,7 @@ This document defines code review standards for the `kinetic-signals` crate.
 
 ### Out-of-scope
 
-`.mimocode/`, `.kilo/`, `.beads/`, IDE configs (`.idea/`, `.cursor/`), `Cargo.lock` (library crate).
+`.beads/`, IDE configs (`.idea/`, `.cursor/`, `.vscode/`), `Cargo.lock` (library crate).
 
 ## Bot review rules
 
@@ -78,7 +78,7 @@ Use [Conventional Commits](https://www.conventionalcommits.org/):
 
 When removing or renaming public items:
 
-1. Bump the minor version (pre-1.0: `0.X.0` → `0.(X+1).0`)
+1. Bump the minor version (pre-1.0: `0.X.0` → `0.(X+1).0`; post-1.0: `X.Y.0` → `X.(Y+1).0`)
 2. Add migration guide to README
 3. Update `docs/boundary-matrix.md` if applicable
 
@@ -90,6 +90,6 @@ When a review comment or issue belongs to another crate:
 |-------------------|-------------|
 | Spike-train analysis (ISI, PSTH) | SpikeStream.jl |
 | SNN runtime / neuron models | neuromod |
-| Financial domain adapters | DendriteTrader.jl |
+| Financial domain adapters | DendriteTrader.jl / metabolic-ledger |
 | Hardware signal acquisition | silicon-bridge |
 | Supervisory orchestration | brainstem-daemon |
