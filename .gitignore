@@ -1,4 +1,5 @@
 /target
 /.idea
 /.junie
+/.beads
 Cargo.lock

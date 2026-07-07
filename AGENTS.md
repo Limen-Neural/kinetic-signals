@@ -1,15 +1,89 @@
 # kinetic-signals
 
-A Rust library crate (zero required dependencies by default) for streaming signal feature extraction (Hurst exponent, Hawkes process, GBM surprise, volatility, entropy, indicators, stats). Library code lives in `src/`; a runnable demo lives in `examples/demo.rs`.
+A Rust library crate for streaming signal feature extraction. Computes Hurst exponent, Hawkes process intensity, surprise anomaly detection, volatility, Shannon entropy, and technical indicators on high-velocity stochastic time-series.
 
-## Cursor Cloud specific instructions
+Part of the [Limen-Neural](https://github.com/Limen-Neural) ecosystem. See [`docs/boundary-matrix.md`](docs/boundary-matrix.md) for what this crate owns vs. neighboring crates.
 
-- This crate uses `edition = "2024"` (see `Cargo.toml`), which requires Rust **>= 1.85**. The current default toolchain (kept current by the startup update script via `rustup`) satisfies this; if you ever see `feature "edition2024" is required`, the active toolchain is too old — run `rustup default stable && rustup update stable`.
-- Standard commands (no special setup needed):
-  - Build: `cargo build`
-  - Test: `cargo test` (runs 16 unit tests plus doctests)
-  - Lint: `cargo clippy`
-  - Format check: `cargo fmt --check` (note: the committed source currently has minor formatting that does not match `rustfmt`, so this check reports a diff; this is pre-existing and not caused by setup)
-  - Run the app/demo: `cargo run --example demo`
-- The crate has zero required dependencies by default. The optional `sentry` feature pulls in the `sentry` crate, which requires network access to download.
+## Repository map
 
+| Path | Purpose |
+|------|---------|
+| `src/` | Library code (7 public modules + private `real` trait) |
+| `examples/demo.rs` | Runnable demo covering all major APIs |
+| `tests/` | Integration tests (cross-language parity, sentry feature) |
+| `tests/fixtures/shared_vectors.json` | Shared test vectors for SpikeStream.jl parity |
+| `docs/boundary-matrix.md` | Architecture ownership and dependency boundaries |
+| `.github/workflows/` | CI/CD pipelines |
+
+## Dependencies
+
+**Zero required runtime dependencies.** The crate is self-contained by default.
+
+| Dependency | Type | Purpose |
+|------------|------|---------|
+| `sentry` 0.48.2 | optional | Error monitoring (feature-gated) |
+| `serial_test` 3.0 | dev | Serial test execution for env var tests |
+| `temp-env` 0.3.6 | dev | Safe environment variable manipulation |
+
+## Toolchain
+
+- **Edition:** 2024 (requires Rust >= 1.85)
+- **MSRV:** 1.85.0 (verified in CI)
+- **No system dependencies** required for the library itself
+
+## Build & test
+
+```bash
+cargo build                  # Build (zero deps)
+cargo build --all-features   # Build with sentry
+cargo test                   # Run unit tests + doctests
+cargo test --all-features    # Include sentry feature tests
+cargo clippy --all-targets --all-features -- -D warnings
+cargo fmt --check
+```
+
+## Running the demo
+
+```bash
+cargo run --example demo
+
+# With Sentry error reporting:
+SENTRY_DSN=https://...@... cargo run --example demo --features sentry
+```
+
+## Feature flags
+
+| Feature | Default | Description |
+|---------|---------|-------------|
+| `sentry` | off | Enables `init_sentry()` and pulls in `sentry` crate |
+
+## CI workflows
+
+| Workflow | Trigger | What it does |
+|----------|---------|--------------|
+| `ci.yml` | push/PR to main | fmt, clippy, build, test, MSRV check, no-default-features build, cargo audit |
+| `coverage.yml` | push/PR to main | cargo-llvm-cov + Codecov upload |
+| `docker.yml` | push/PR to main | Containerized build + test |
+| `sentry-release.yml` | tag push `v*` | Creates Sentry release |
+
+## Code style
+
+- **Formatting:** `cargo fmt` (rustfmt)
+- **Linting:** `cargo clippy --all-targets --all-features -- -D warnings`
+- **Comments:** No comments unless the WHY is non-obvious. Never explain WHAT.
+- **Headers:** All source files include `// SPDX-License-Identifier: MIT OR Apache-2.0`
+- **Unsafe:** Avoid. Edition 2024 marks `env::set_var`/`env::remove_var` as unsafe — use `temp-env` crate in tests.
+
+## Testing
+
+- **Unit tests:** Inline `#[cfg(test)]` modules in `src/` files
+- **Integration tests:** `tests/` directory
+- **Cross-language parity:** `tests/fixtures/shared_vectors.json` shared with SpikeStream.jl
+- **Thread-safety:** Compile-time `Send + Sync` assertions in `src/lib.rs`
+
+## PR instructions
+
+- **Naming:** Conventional commits — `feat:`, `fix:`, `docs:`, `chore:`, `refactor:`
+- **Scope:** One issue per PR when possible
+- **Breaking changes:** Bump version for removed/renamed public items
+- **Required:** All CI checks must pass, zero unresolved review threads
