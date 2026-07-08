@@ -26,7 +26,7 @@ This document defines code review standards for the `kinetic-signals` crate.
 
 | Bot | Focus areas | Common fixes |
 |-----|-------------|--------------|
-| **Codacy** | Security (SHA pinning), code complexity (excluded: markdown, workflows, examples, test fixtures) | Pin actions to SHAs, reduce cyclomatic complexity in Rust code |
+| **Codacy** | Security (SHA pinning), code complexity (excluded: markdown, examples, test fixtures) | Pin actions to SHAs, reduce cyclomatic complexity in Rust code |
 | **Devin** | Behavioral consistency, missing caching, MSRV concerns | Add cargo caching, clarify intentional vs accidental behavior |
 | **CodeRabbit** | `persist-credentials: false`, least-privilege permissions | Add permissions block, disable credential persistence |
 | **Kilo Code** | Suggestions, warnings, code improvements | Address suggestions with rationale or fix |
