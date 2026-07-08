@@ -73,7 +73,7 @@ SENTRY_DSN=https://...@... cargo run --example demo --features sentry
 - **Formatting:** `cargo fmt` (rustfmt)
 - **Linting:** `cargo clippy --all-targets --all-features -- -D warnings`
 - **Comments:** No comments unless the reason is non-obvious. Never explain what the code does.
-- **Headers:** All source files include a license identifier header matching the dual-license (see `LICENSE-MIT` and `LICENSE-APACHE` files)
+- **Headers:** All source files include a license identifier header (see the license files in the repo root)
 - **Unsafe:** Avoid. Edition 2024 marks `env::set_var`/`env::remove_var` as unsafe — use `temp-env` crate in tests.
 
 ## Testing
