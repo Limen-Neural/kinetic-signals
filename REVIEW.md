@@ -17,10 +17,16 @@ This document defines code review standards for the `kinetic-signals` crate.
 | `docs/` | Architecture docs, boundary matrix |
 | `AGENTS.md` | Agent instructions accuracy |
 | `REVIEW.md` | This file |
+| `.codacy.yml` | Exclusion patterns match intent; do not hide security-relevant paths |
+| `codecov.yml` | Coverage thresholds and ignore paths |
+| `Dockerfile` | Base image, build correctness, multi-stage hygiene |
+| `.gitignore` | Ignore rules for build artifacts, IDE/bot dirs, lockfile |
 
 ### Out-of-scope
 
-`.beads/`, `.mimocode/`, `.kilo/`, IDE configs (`.idea/`, `.cursor/`, `.vscode/`), `Cargo.lock` (library crate).
+`.beads/`, `.mimocode/`, `.kilo/`, IDE configs (`.idea/`, `.cursor/`, `.vscode/`), `Cargo.lock` (library crate), license text files (`LICENSE-MIT`, `LICENSE-APACHE-2.0`) unless dual-license policy changes.
+
+Paths not listed above default to **in-scope** if they affect build, CI, packaging, or public docs; default to **out-of-scope** if they are local tooling or generated artifacts.
 
 ## Bot review rules
 
