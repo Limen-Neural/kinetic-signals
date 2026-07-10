@@ -1,0 +1,8 @@
+exclude_patterns:
+  - "docs/**"
+  - "*.md"
+  - "examples/**"
+  - "tests/fixtures/**"
+  - ".mimocode/**"
+  - ".kilo/**"
+  - ".beads/**"
