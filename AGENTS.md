@@ -89,3 +89,12 @@ SENTRY_DSN=https://...@... cargo run --example demo --features sentry
 - **Scope:** One issue per PR; multi-issue PRs require justification in the PR description
 - **Breaking changes:** Bump version for removed/renamed public items (see REVIEW.md for semver rules)
 - **Required:** All CI checks must pass and zero unresolved review threads before merge. Exceptions: docs-only PRs may skip coverage checks; maintainer approval required for any override.
+
+## Cursor Cloud specific instructions
+
+Standard commands live in **Build & test** / **Running the demo** above — use those. Notes below are only the non-obvious environment caveats.
+
+- **Toolchain:** Edition 2024 needs Rust >= 1.85. The base image ships an older `rustc`, so the cloud snapshot installs and defaults to a newer `stable` (via `rustup default stable`). Default builds/tests/clippy/fmt all run under it.
+- **`--all-features` / `sentry` needs system OpenSSL:** the `sentry` feature pulls in `openssl-sys`, which requires the `libssl-dev` and `pkg-config` system packages (already present in the snapshot). Without them, `cargo build --all-features` / `cargo test --all-features` fail with a "Could not find directory of OpenSSL installation" error. Default (no-feature) build/test have zero deps and need none of this.
+- **`Cargo.lock` is gitignored** (library crate), so it is regenerated on a fresh checkout; the update script runs `cargo fetch` to pre-warm the dependency cache.
+- **Running the app:** this is a library crate; the "application" is `cargo run --example demo`, which exercises every public API and prints results to stdout (no GUI).
