@@ -1,8 +1,9 @@
-exclude_patterns:
+exclude_paths:
   - "docs/**"
-  - "*.md"
+  - "**/*.md"
   - "examples/**"
   - "tests/fixtures/**"
+  - ".devin/**"
   - ".mimocode/**"
   - ".kilo/**"
   - ".beads/**"
