@@ -36,11 +36,13 @@ export SENTRY_DSN=https://<key>@<org>.ingest.sentry.io/<project>
 ### `init_sentry()`
 
 ```rust
-#[cfg(feature = "sentry")]
+// Gated on kinetic-signals feature "sentry" (compile-time in THIS crate):
+// #[cfg(feature = "sentry")]
 pub fn init_sentry() -> Option<sentry::ClientInitGuard>
 ```
 
-Only available when the `sentry` feature is enabled.
+Only compiled into `kinetic-signals` when **its** `sentry` feature is enabled.
+Downstream crates get the symbol by enabling `kinetic-signals/sentry` (see Usage).
 
 | Behavior | Result |
 |----------|--------|
@@ -64,15 +66,37 @@ sentry::ClientOptions {
 
 ## Usage example
 
+Downstream crates that enable `kinetic-signals/sentry` can call `init_sentry`
+unconditionally (the symbol only exists when that feature is on). Prefer a
+**forwarding feature** in the binary's `Cargo.toml` rather than relying on a
+local feature name of `"sentry"` alone:
+
+```toml
+# binary / app Cargo.toml
+[features]
+sentry = ["kinetic-signals/sentry"]
+
+[dependencies]
+kinetic-signals = { version = "0.4", features = ["sentry"] }  # or gate via your feature
+```
+
 ```rust
 fn main() {
     // Keep the guard alive for the whole process so events flush on exit.
-    #[cfg(feature = "sentry")]
+    // Available only when THIS crate's build enables kinetic-signals/sentry
+    // (e.g. `cargo run --features sentry` with a forwarding feature, or when
+    // kinetic-signals is always built with `features = ["sentry"]` as above).
     let _guard = kinetic_signals::init_sentry();
 
     // ... application code ...
 }
 ```
+
+If `kinetic-signals` is a dependency of a library that does not re-export a
+`sentry` feature, call sites that live behind `#[cfg(feature = "…")]` must use
+**your** feature name that forwards to `kinetic-signals/sentry` — a bare
+`#[cfg(feature = "sentry")]` in the consumer only works when that crate defines
+a `sentry` feature itself.
 
 Demo binary (same pattern):
 

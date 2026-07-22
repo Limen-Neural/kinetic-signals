@@ -198,7 +198,7 @@ export SENTRY_DSN=https://...@...
 **Usage** — call `init_sentry()` once and keep the guard for the process lifetime (flush on drop, up to 2s):
 
 ```rust
-#[cfg(feature = "sentry")]
+// Requires kinetic-signals built with `features = ["sentry"]` (see docs/sentry.md).
 let _guard = kinetic_signals::init_sentry();
 ```
 
