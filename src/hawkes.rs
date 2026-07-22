@@ -7,11 +7,15 @@
 //! intensity at time \( t \) is:
 //!
 //! \[
-//! \lambda(t) = \mu + \sum_{t_i < t} \alpha\, e^{-\beta (t - t_i)}
+//! \lambda(t) = \mu + \sum_{t_i \le t} \alpha\, e^{-\beta (t - t_i)}
 //! \]
 //!
 //! where \(\mu\) is the baseline rate, \(\alpha\) the excitation amplitude,
 //! and \(\beta\) the exponential decay rate.
+//!
+//! [`compute_hawkes`] returns this **post-event** intensity at the last event
+//! time (the sum includes that last event, so a single-event history yields
+//! \(\mu + \alpha\)). The strict pre-event form uses \(t_i < t\) instead.
 //!
 //! Use [`compute_hawkes`] for batch estimation over a full event history, or
 //! [`compute_hawkes_streaming`] for O(1) online updates.
