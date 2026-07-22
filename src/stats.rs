@@ -74,4 +74,35 @@ mod tests {
         // Normal-ish distribution should have low skewness
         assert!(stats.skewness.abs() < 0.1);
     }
+
+    #[test]
+    fn test_signal_stats_empty() {
+        let stats = compute_signal_stats(&[]);
+        assert_eq!(stats.count, 0);
+        assert_eq!(stats.mean, 0.0);
+        assert_eq!(stats.variance, 0.0);
+        assert_eq!(stats.skewness, 0.0);
+        assert_eq!(stats.kurtosis, 0.0);
+    }
+
+    #[test]
+    fn test_signal_stats_single_element() {
+        let stats = compute_signal_stats(&[7.5]);
+        assert_eq!(stats.count, 1);
+        assert_eq!(stats.mean, 7.5);
+        assert_eq!(stats.variance, 0.0);
+        assert_eq!(stats.skewness, 0.0);
+        assert_eq!(stats.kurtosis, 0.0);
+    }
+
+    #[test]
+    fn test_signal_stats_constant_values() {
+        let data = vec![3.0, 3.0, 3.0, 3.0, 3.0];
+        let stats = compute_signal_stats(&data);
+        assert_eq!(stats.count, 5);
+        assert_eq!(stats.mean, 3.0);
+        assert_eq!(stats.variance, 0.0);
+        assert_eq!(stats.skewness, 0.0);
+        assert_eq!(stats.kurtosis, 0.0);
+    }
 }
