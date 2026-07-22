@@ -174,8 +174,8 @@ fn demo_surprise_sequence() {
         threshold: 3.0,
     };
 
-    // Mostly calm series with one large jump and one drop
-    let series = vec![100.0, 100.5, 101.0, 150.0, 149.0, 50.0, 51.0];
+    // Calm steps + one large jump + one large drop; tiny post-drop move stays sub-threshold
+    let series = vec![100.0, 100.5, 101.0, 150.0, 148.5, 50.0, 50.05];
     let results = compute_surprise_sequence(&series, &params);
 
     let mut anomaly_count = 0usize;
