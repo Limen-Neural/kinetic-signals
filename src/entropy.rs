@@ -1,13 +1,41 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+//! Shannon entropy of a real-valued signal via histogram discretization.
+//!
+//! Entropy quantifies the average information content (disorder) of a sample
+//! distribution. Values near zero indicate a highly peaked / deterministic
+//! signal; values near \(\ln(\text{bins})\) indicate a near-uniform distribution.
+//!
+//! [`compute_shannon_entropy`] bins samples into equal-width histogram bins
+//! spanning the observed min–max range, then computes natural-log Shannon
+//! entropy and a relative (normalized) form in \([0, 1]\).
+
+/// Result of a Shannon entropy computation.
 #[derive(Debug, Clone)]
 pub struct EntropyResult {
+    /// Shannon entropy in nats (\( -\sum p_i \ln p_i \)).
     pub shannon: f64,
-    pub relative: f64, // normalized to [0, 1]
+    /// Entropy normalized by \(\ln(\text{bins})\), so the range is \([0, 1]\).
+    pub relative: f64,
+    /// Number of histogram bins that received at least one sample.
     pub bin_count: usize,
 }
 
-/// Compute Shannon entropy of a signal using histogram discretization
+/// Compute Shannon entropy of a signal using histogram discretization.
+///
+/// Returns a zeroed result when `data` has fewer than two samples or `bins`
+/// is zero. A constant series yields zero entropy with `bin_count == 1`.
+///
+/// # Example
+///
+/// ```rust
+/// use kinetic_signals::compute_shannon_entropy;
+///
+/// let data = vec![1.0, 2.0, 3.0, 4.0];
+/// let res = compute_shannon_entropy(&data, 4);
+/// assert!(res.shannon > 0.0);
+/// assert!(res.relative > 0.0 && res.relative <= 1.0);
+/// ```
 pub fn compute_shannon_entropy(data: &[f64], bins: usize) -> EntropyResult {
     if data.len() < 2 || bins == 0 {
         return EntropyResult {

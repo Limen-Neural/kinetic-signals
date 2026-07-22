@@ -1,17 +1,42 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+//! Hawkes self-exciting point process intensity estimation.
+//!
+//! A Hawkes process models event streams where each event temporarily raises
+//! the probability of future events (self-excitation). The conditional
+//! intensity at time \( t \) is:
+//!
+//! \[
+//! \lambda(t) = \mu + \sum_{t_i < t} \alpha\, e^{-\beta (t - t_i)}
+//! \]
+//!
+//! where \(\mu\) is the baseline rate, \(\alpha\) the excitation amplitude,
+//! and \(\beta\) the exponential decay rate.
+//!
+//! Use [`compute_hawkes`] for batch estimation over a full event history, or
+//! [`compute_hawkes_streaming`] for O(1) online updates.
+
+/// Result of a batch Hawkes intensity estimate.
 #[derive(Debug, Clone)]
 pub struct HawkesResult {
+    /// Conditional intensity \(\lambda(t)\) at the last event time.
     pub intensity: f64,
+    /// Number of events in the input history.
     pub event_count: usize,
+    /// Mean per-event excitation contribution at the last event time.
     pub avg_excitation: f64,
 }
 
+/// Parameters of an exponential-kernel Hawkes process.
 #[derive(Debug, Clone)]
 pub struct HawkesParams {
+    /// Baseline (immigrant) intensity \(\mu \ge 0\).
     pub mu: f64,
+    /// Excitation amplitude \(\alpha \ge 0\) added by each event.
     pub alpha: f64,
+    /// Exponential decay rate \(\beta > 0\) of excitation.
     pub beta: f64,
+    /// Nominal time step (unused by the current estimators; retained for API stability).
     pub dt: f64,
 }
 
@@ -26,6 +51,9 @@ impl Default for HawkesParams {
     }
 }
 
+/// Estimate Hawkes intensity at the last event from a full event-time history.
+///
+/// Returns baseline intensity alone when `event_times` is empty.
 pub fn compute_hawkes(event_times: &[f64], params: &HawkesParams) -> HawkesResult {
     if event_times.is_empty() {
         return HawkesResult {
@@ -59,6 +87,41 @@ pub fn compute_hawkes(event_times: &[f64], params: &HawkesParams) -> HawkesResul
     }
 }
 
+/// Online Hawkes update for a newly observed event.
+///
+/// Maintains a running decayed event-count sum so each step is O(1).
+///
+/// # Parameters
+///
+/// * `_prev_intensity` — previous intensity (currently unused; reserved for API stability)
+/// * `new_event_time` — timestamp of the newly arrived event
+/// * `last_event_time` — timestamp of the previous event
+/// * `params` — Hawkes process parameters
+/// * `decay_sum` — running sum of past events after exponential decay
+///
+/// # Returns
+///
+/// A tuple `(new_intensity, new_decay_sum)`:
+/// - `new_intensity` — \(\mu + \alpha \cdot\) decayed sum just before incorporating the new event
+/// - `new_decay_sum` — decayed sum after appending the new event (pass this on the next call)
+///
+/// # Example
+///
+/// ```rust
+/// use kinetic_signals::{HawkesParams, compute_hawkes_streaming};
+///
+/// let params = HawkesParams::default();
+/// let mut decay_sum = 0.0;
+/// let mut last_t = 0.0;
+///
+/// for &t in &[0.1, 0.15, 0.5] {
+///     let (intensity, new_sum) =
+///         compute_hawkes_streaming(0.0, t, last_t, &params, decay_sum);
+///     decay_sum = new_sum;
+///     last_t = t;
+///     assert!(intensity >= params.mu);
+/// }
+/// ```
 pub fn compute_hawkes_streaming(
     _prev_intensity: f64,
     new_event_time: f64,
