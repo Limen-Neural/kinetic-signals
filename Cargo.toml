@@ -24,7 +24,7 @@ exclude = [
 
 [package.metadata.docs.rs]
 all-features = true
-rustdoc-args = ["--cfg", "docsrs"]
+rustdoc-args = ["--cfg=docsrs"]
 
 [dependencies]
 sentry = { version = "0.48.2", optional = true }
