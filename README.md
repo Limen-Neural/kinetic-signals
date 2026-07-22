@@ -1,5 +1,7 @@
 # kinetic-signals
 
+[![Crates.io](https://img.shields.io/crates/v/kinetic-signals.svg)](https://crates.io/crates/kinetic-signals)
+[![docs.rs](https://docs.rs/kinetic-signals/badge.svg)](https://docs.rs/kinetic-signals)
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/License-MIT%20OR%20Apache--2.0-blue.svg)](https://opensource.org/licenses/MIT)
 [![codecov](https://codecov.io/gh/Limen-Neural/kinetic-signals/branch/main/graph/badge.svg)](https://codecov.io/gh/Limen-Neural/kinetic-signals)
 
@@ -20,7 +22,21 @@ A high-performance, domain-agnostic Rust crate for computing streaming signal st
 
 ## Installation
 
-Add to your `Cargo.toml`:
+Add to your `Cargo.toml` (crates.io):
+
+```toml
+[dependencies]
+kinetic-signals = "0.4"
+```
+
+Optional Sentry error reporting:
+
+```toml
+[dependencies]
+kinetic-signals = { version = "0.4", features = ["sentry"] }
+```
+
+From git (latest `main`, pre-release changes):
 
 ```toml
 [dependencies]
@@ -102,8 +118,9 @@ Coverage reports are automatically generated and uploaded to [Codecov](https://c
 - [Build & Test](.github/workflows/ci.yml) — fmt, clippy, build, test
 - [Coverage](.github/workflows/coverage.yml) — cargo-llvm-cov + Codecov upload
 - [Docker](.github/workflows/docker.yml) — containerized build + test
-- [Sentry Release](.github/workflows/sentry-release.yml) — creates Sentry release on tag push
+- [Sentry Release](.github/workflows/sentry-release.yml) — creates Sentry release on tag push `v*`
 
+**Publishing:** crates.io publish is manual (`cargo publish` with crates.io credentials). Tag pushes matching `v*` also trigger the Sentry release workflow when `SENTRY_AUTH_TOKEN` is configured in repository secrets.
 **Docker** (reproducible build):
 
 ```bash
