@@ -93,8 +93,10 @@ fn demo_hawkes_streaming() {
         dt: 0.001,
     };
 
-    // Online update: process every event (including the first) so decay_sum
-    // counts the full history — matching batch semantics for the same times.
+    // Online update: process every event (including the first).
+    // `compute_hawkes_streaming` returns pre-jump intensity from decayed history,
+    // then `new_decay_sum = decayed + 1`. Post-event intensity (batch-comparable)
+    // is μ + α·new_decay_sum at the event instant.
     let event_times = [0.0, 0.01, 0.02, 0.03, 0.1, 0.5, 0.51, 0.52];
     let mut intensity = params.mu;
     let mut decay_sum = 0.0_f64;
@@ -102,9 +104,11 @@ fn demo_hawkes_streaming() {
     let mut last_t = event_times[0];
 
     for (i, &t) in event_times.iter().enumerate() {
-        let (new_intensity, new_decay_sum) =
+        let (_pre_jump, new_decay_sum) =
             compute_hawkes_streaming(intensity, t, last_t, &params, decay_sum);
-        intensity = new_intensity;
+        // Include the event at t in the displayed intensity (matches batch λ).
+        let post_event = params.mu + params.alpha * new_decay_sum;
+        intensity = post_event;
         decay_sum = new_decay_sum;
         last_t = t;
         println!(
@@ -116,10 +120,12 @@ fn demo_hawkes_streaming() {
         );
     }
 
+    let batch = compute_hawkes(&event_times, &params);
     println!(
-        "Final streaming intensity={:.3} (events={})",
+        "Final streaming intensity={:.3} (events={}); batch intensity={:.3}",
         intensity,
-        event_times.len()
+        event_times.len(),
+        batch.intensity
     );
     println!();
 }
