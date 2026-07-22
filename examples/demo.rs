@@ -93,23 +93,26 @@ fn demo_hawkes_streaming() {
         dt: 0.001,
     };
 
-    // Online update: each new event decays prior excitation and adds a jump
+    // Online update: process every event (including the first) so decay_sum
+    // counts the full history — matching batch semantics for the same times.
     let event_times = [0.0, 0.01, 0.02, 0.03, 0.1, 0.5, 0.51, 0.52];
     let mut intensity = params.mu;
     let mut decay_sum = 0.0_f64;
+    // Seed last_t equal to the first event so the first update has dt=0.
     let mut last_t = event_times[0];
 
-    println!("t={:.2}: intensity={:.3} (baseline)", last_t, intensity);
-
-    for &t in &event_times[1..] {
+    for (i, &t) in event_times.iter().enumerate() {
         let (new_intensity, new_decay_sum) =
             compute_hawkes_streaming(intensity, t, last_t, &params, decay_sum);
         intensity = new_intensity;
         decay_sum = new_decay_sum;
         last_t = t;
         println!(
-            "t={:.2}: intensity={:.3}, decay_sum={:.3}",
-            t, intensity, decay_sum
+            "t={:.2}: intensity={:.3}, decay_sum={:.3}{}",
+            t,
+            intensity,
+            decay_sum,
+            if i == 0 { " (first event)" } else { "" }
         );
     }
 
