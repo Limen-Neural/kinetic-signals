@@ -77,7 +77,12 @@ local feature name of `"sentry"` alone:
 sentry = ["kinetic-signals/sentry"]
 
 [dependencies]
-kinetic-signals = { version = "0.4", features = ["sentry"] }  # or gate via your feature
+# Prefer git until crates.io publish lands (#8 / LIM-193):
+kinetic-signals = {
+  git = "https://github.com/Limen-Neural/kinetic-signals",
+  features = ["sentry"],
+}
+# After publish: kinetic-signals = { version = "0.4", features = ["sentry"] }
 ```
 
 ```rust
