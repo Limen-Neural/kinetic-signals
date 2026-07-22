@@ -180,13 +180,31 @@ Licensed under either of
 
 at your option.
 
-## Error monitoring (optional)
+## Observability (optional Sentry)
 
-You can opt in to error reporting by enabling the `sentry` feature and setting the `SENTRY_DSN` environment variable:
+Opt-in error monitoring via the optional `sentry` feature. Full guide: [`docs/sentry.md`](docs/sentry.md).
+
+**Setup** — enable the feature and set a DSN:
+
+```toml
+[dependencies]
+kinetic-signals = { git = "https://github.com/Limen-Neural/kinetic-signals", features = ["sentry"] }
+```
 
 ```bash
-SENTRY_DSN=https://...@... cargo run --example demo --features sentry
+export SENTRY_DSN=https://...@...
 ```
+
+**Usage** — call `init_sentry()` once and keep the guard for the process lifetime (flush on drop, up to 2s):
+
+```rust
+// Requires kinetic-signals built with `features = ["sentry"]` (see docs/sentry.md).
+let _guard = kinetic_signals::init_sentry();
+```
+
+- Returns `Some(ClientInitGuard)` when `SENTRY_DSN` is set and non-empty; `None` otherwise.
+- Release is set via `sentry::release_name!()` → `CARGO_PKG_NAME@CARGO_PKG_VERSION` (e.g. `kinetic-signals@0.4.0`).
+- Tag pushes `v*` create matching Sentry releases (`kinetic-signals@X.Y.Z`) via [sentry-release.yml](.github/workflows/sentry-release.yml).
 
 Sentry is **never** initialized unless the feature is enabled and the DSN is present. No data is sent by default.
 
