@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
 use kinetic_signals::{
-    VolEstimator, compute_hawkes, compute_hurst, compute_shannon_entropy, compute_surprise,
-    hawkes::HawkesParams, surprise::SurpriseParams,
+    EMA, SMA, VolEstimator, ZScore, compute_hawkes, compute_hawkes_streaming, compute_hurst,
+    compute_shannon_entropy, compute_signal_stats, compute_surprise, compute_surprise_sequence,
+    detect_anomaly, hawkes::HawkesParams, surprise::SurpriseParams,
 };
 
 fn lcg_next(state: &mut u64) -> u64 {
@@ -25,9 +26,13 @@ fn main() {
 
     demo_hurst();
     demo_hawkes();
+    demo_hawkes_streaming();
     demo_surprise();
+    demo_surprise_sequence();
     demo_volatility();
     demo_entropy();
+    demo_signal_stats();
+    demo_indicators();
 }
 
 fn demo_hurst() {
@@ -78,6 +83,44 @@ fn demo_hawkes() {
     println!();
 }
 
+fn demo_hawkes_streaming() {
+    println!("--- Hawkes Streaming (Online Intensity) ---");
+
+    let params = HawkesParams {
+        mu: 0.1,
+        alpha: 0.8,
+        beta: 2.0,
+        dt: 0.001,
+    };
+
+    // Online update: each new event decays prior excitation and adds a jump
+    let event_times = [0.0, 0.01, 0.02, 0.03, 0.1, 0.5, 0.51, 0.52];
+    let mut intensity = params.mu;
+    let mut decay_sum = 0.0_f64;
+    let mut last_t = event_times[0];
+
+    println!("t={:.2}: intensity={:.3} (baseline)", last_t, intensity);
+
+    for &t in &event_times[1..] {
+        let (new_intensity, new_decay_sum) =
+            compute_hawkes_streaming(intensity, t, last_t, &params, decay_sum);
+        intensity = new_intensity;
+        decay_sum = new_decay_sum;
+        last_t = t;
+        println!(
+            "t={:.2}: intensity={:.3}, decay_sum={:.3}",
+            t, intensity, decay_sum
+        );
+    }
+
+    println!(
+        "Final streaming intensity={:.3} (events={})",
+        intensity,
+        event_times.len()
+    );
+    println!();
+}
+
 fn demo_surprise() {
     println!("--- Surprise (Transition Anomalies) ---");
 
@@ -99,7 +142,7 @@ fn demo_surprise() {
         "SPIKE: surprise={:.3}, z={:.2} (ANOMALY={})",
         spike.surprise,
         spike.z_score,
-        spike.surprise > params.threshold
+        detect_anomaly(&spike, &params)
     );
 
     let drop = compute_surprise(50.0, 100.0, &params);
@@ -107,7 +150,53 @@ fn demo_surprise() {
         "DROP: surprise={:.3}, z={:.2} (ANOMALY={})",
         drop.surprise,
         drop.z_score,
-        drop.surprise > params.threshold
+        detect_anomaly(&drop, &params)
+    );
+    println!();
+}
+
+fn demo_surprise_sequence() {
+    println!("--- Surprise Sequence + Anomaly Detection ---");
+
+    let params = SurpriseParams {
+        mu: 0.0,
+        sigma: 0.15,
+        dt: 0.001,
+        threshold: 3.0,
+    };
+
+    // Mostly calm series with one large jump and one drop
+    let series = vec![100.0, 100.5, 101.0, 150.0, 149.0, 50.0, 51.0];
+    let results = compute_surprise_sequence(&series, &params);
+
+    let mut anomaly_count = 0usize;
+    let mut max_surprise = 0.0_f64;
+
+    for (i, r) in results.iter().enumerate() {
+        let is_anomaly = detect_anomaly(r, &params);
+        if is_anomaly {
+            anomaly_count += 1;
+        }
+        if r.surprise > max_surprise {
+            max_surprise = r.surprise;
+        }
+        let flag = if is_anomaly { " ANOMALY" } else { "" };
+        println!(
+            "  step {} ({} → {}): surprise={:.3}, z={:.2}{}",
+            i + 1,
+            series[i],
+            series[i + 1],
+            r.surprise,
+            r.z_score,
+            flag
+        );
+    }
+
+    println!(
+        "Summary: transitions={}, anomalies={}, max_surprise={:.3}",
+        results.len(),
+        anomaly_count,
+        max_surprise
     );
     println!();
 }
@@ -147,6 +236,53 @@ fn demo_entropy() {
     println!(
         "High complexity: H={:.3}, relative={:.3}, bins={}",
         res2.shannon, res2.relative, res2.bin_count
+    );
+    println!();
+}
+
+fn demo_signal_stats() {
+    println!("--- Signal Stats (High-Order Moments) ---");
+
+    let symmetric = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+    let s1 = compute_signal_stats(&symmetric);
+    println!(
+        "Symmetric: mean={:.3}, var={:.3}, skew={:.3}, kurt={:.3}, n={}",
+        s1.mean, s1.variance, s1.skewness, s1.kurtosis, s1.count
+    );
+
+    // Right-skewed: many small values, one large outlier
+    let skewed = vec![1.0, 1.1, 1.2, 1.0, 1.05, 10.0];
+    let s2 = compute_signal_stats(&skewed);
+    println!(
+        "Right-skewed: mean={:.3}, var={:.3}, skew={:.3}, kurt={:.3}, n={}",
+        s2.mean, s2.variance, s2.skewness, s2.kurtosis, s2.count
+    );
+    println!();
+}
+
+fn demo_indicators() {
+    println!("--- Indicators (EMA / SMA / ZScore) ---");
+
+    let prices = [100.0, 102.0, 101.0, 105.0, 110.0, 108.0, 112.0];
+
+    let mut ema = EMA::new(3);
+    let mut sma = SMA::new(3);
+
+    println!("price | EMA(3) | SMA(3) | z vs mean/std of series");
+
+    let stats = compute_signal_stats(&prices);
+    let std = stats.variance.sqrt();
+
+    for &p in &prices {
+        let e = ema.update(p);
+        let s = sma.update(p);
+        let z = ZScore::compute(p, stats.mean, std);
+        println!("{:5.1} | {:6.3} | {:6.3} | {:+.3}", p, e, s, z);
+    }
+
+    println!(
+        "Series mean={:.3}, std={:.3} (used for ZScore)",
+        stats.mean, std
     );
     println!();
 }
