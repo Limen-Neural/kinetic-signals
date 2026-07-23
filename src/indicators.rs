@@ -93,4 +93,42 @@ mod tests {
         assert_eq!(sma.update(3.0), 2.0);
         assert_eq!(sma.update(4.0), 3.0);
     }
+
+    #[test]
+    fn test_zscore_known_mean_std() {
+        assert!((ZScore::compute(110.0, 100.0, 10.0) - 1.0).abs() < 1e-12);
+        assert!((ZScore::compute(80.0, 100.0, 10.0) - (-2.0)).abs() < 1e-12);
+        assert!((ZScore::compute(100.0, 100.0, 10.0)).abs() < 1e-12);
+    }
+
+    #[test]
+    fn test_zscore_zero_std() {
+        assert_eq!(ZScore::compute(42.0, 42.0, 0.0), 0.0);
+        assert_eq!(ZScore::compute(100.0, 50.0, 1e-13), 0.0);
+    }
+
+    #[test]
+    fn test_zscore_multiple_values_known_distribution() {
+        let data = [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0];
+        let n = data.len() as f64;
+        let mean = data.iter().sum::<f64>() / n;
+        let variance = data.iter().map(|x| (x - mean).powi(2)).sum::<f64>() / n;
+        let std = variance.sqrt();
+
+        assert!((mean - 5.0).abs() < 1e-12);
+        assert!((std - 2.0).abs() < 1e-12);
+
+        let z_min = ZScore::compute(2.0, mean, std);
+        let z_mean = ZScore::compute(5.0, mean, std);
+        let z_max = ZScore::compute(9.0, mean, std);
+
+        assert!((z_min - (-1.5)).abs() < 1e-12);
+        assert!(z_mean.abs() < 1e-12);
+        assert!((z_max - 2.0).abs() < 1e-12);
+
+        for &v in &data {
+            let z = ZScore::compute(v, mean, std);
+            assert!(z.is_finite());
+        }
+    }
 }

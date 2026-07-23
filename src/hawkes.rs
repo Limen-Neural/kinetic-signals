@@ -98,4 +98,64 @@ mod tests {
         assert_eq!(result.intensity, params.mu);
         assert_eq!(result.event_count, 0);
     }
+
+    #[test]
+    fn test_hawkes_streaming_single_event() {
+        let params = HawkesParams::default();
+        let (intensity, decay_sum) = compute_hawkes_streaming(params.mu, 0.0, 0.0, &params, 0.0);
+        assert!((intensity - params.mu).abs() < 1e-12);
+        assert!((decay_sum - 1.0).abs() < 1e-12);
+    }
+
+    #[test]
+    fn test_hawkes_streaming_empty_prior() {
+        let params = HawkesParams {
+            mu: 0.2,
+            alpha: 0.5,
+            beta: 1.0,
+            dt: 0.001,
+        };
+        let (intensity, decay_sum) = compute_hawkes_streaming(0.0, 1.0, 0.0, &params, 0.0);
+        assert!((intensity - params.mu).abs() < 1e-12);
+        assert!((decay_sum - 1.0).abs() < 1e-12);
+    }
+
+    #[test]
+    fn test_hawkes_streaming_incremental() {
+        let params = HawkesParams {
+            mu: 0.1,
+            alpha: 0.8,
+            beta: 2.0,
+            dt: 0.001,
+        };
+
+        let events = [0.0, 0.01, 0.02, 0.5];
+        let mut intensity = params.mu;
+        let mut decay_sum = 0.0;
+        let mut last_t = events[0];
+
+        let (i0, d0) = compute_hawkes_streaming(intensity, last_t, last_t, &params, decay_sum);
+        intensity = i0;
+        decay_sum = d0;
+        assert!((intensity - params.mu).abs() < 1e-12);
+        assert!((decay_sum - 1.0).abs() < 1e-12);
+
+        for &t in &events[1..] {
+            let (i, d) = compute_hawkes_streaming(intensity, t, last_t, &params, decay_sum);
+            intensity = i;
+            decay_sum = d;
+            last_t = t;
+            assert!(intensity >= params.mu);
+            assert!(decay_sum > 0.0);
+            assert!(intensity.is_finite());
+            assert!(decay_sum.is_finite());
+        }
+
+        assert!(intensity > params.mu);
+
+        let (sparse_i, _) =
+            compute_hawkes_streaming(intensity, last_t + 10.0, last_t, &params, decay_sum);
+        assert!(sparse_i < intensity);
+        assert!((sparse_i - params.mu).abs() < 0.01);
+    }
 }

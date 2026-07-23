@@ -96,4 +96,10 @@ mod tests {
         }
         assert_eq!(v.len(), 3);
     }
+
+    #[test]
+    #[should_panic(expected = "capacity must be > 0")]
+    fn test_vol_estimator_zero_capacity_panics() {
+        let _ = VolEstimator::new(0);
+    }
 }

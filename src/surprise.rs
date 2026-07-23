@@ -157,4 +157,88 @@ mod tests {
         let result = compute_surprise(100.5_f32, 100.0_f32, &params);
         assert!(result.surprise >= 0.0_f32);
     }
+
+    #[test]
+    fn test_surprise_sequence_normal() {
+        let params = SurpriseParams {
+            mu: 0.0,
+            sigma: 0.15,
+            dt: 0.001,
+            threshold: 3.0,
+        };
+        let values = vec![100.0_f64, 100.5, 100.2, 100.8, 100.4];
+        let results = compute_surprise_sequence(&values, &params);
+        assert_eq!(results.len(), values.len() - 1);
+        for r in &results {
+            assert!(r.surprise.is_finite());
+            assert!(r.surprise >= 0.0);
+            assert!(r.surprise <= params.threshold);
+        }
+    }
+
+    #[test]
+    fn test_surprise_sequence_anomalous_spike() {
+        let params = SurpriseParams {
+            mu: 0.0,
+            sigma: 0.15,
+            dt: 0.001,
+            threshold: 3.0,
+        };
+        let values = vec![100.0, 100.5, 150.0, 149.5];
+        let results = compute_surprise_sequence(&values, &params);
+        assert_eq!(results.len(), 3);
+        assert!(results[0].surprise <= params.threshold);
+        assert!(results[1].surprise > params.threshold);
+        assert!(results[1].surprise > results[0].surprise);
+    }
+
+    #[test]
+    fn test_surprise_sequence_short_input() {
+        let params = SurpriseParams::default();
+        assert!(compute_surprise_sequence(&[], &params).is_empty());
+        assert!(compute_surprise_sequence(&[1.0], &params).is_empty());
+    }
+
+    #[test]
+    fn test_detect_anomaly_above_threshold() {
+        let params = SurpriseParams {
+            mu: 0.0,
+            sigma: 0.15,
+            dt: 0.001,
+            threshold: 3.0,
+        };
+        let spike = compute_surprise(150.0, 100.0, &params);
+        assert!(spike.surprise > params.threshold);
+        assert!(detect_anomaly(&spike, &params));
+    }
+
+    #[test]
+    fn test_detect_anomaly_below_threshold() {
+        let params = SurpriseParams {
+            mu: 0.0,
+            sigma: 0.15,
+            dt: 0.001,
+            threshold: 3.0,
+        };
+        let calm = compute_surprise(100.5, 100.0, &params);
+        assert!(calm.surprise <= params.threshold);
+        assert!(!detect_anomaly(&calm, &params));
+    }
+
+    #[test]
+    fn test_detect_anomaly_at_threshold() {
+        let params = SurpriseParams {
+            mu: 0.0,
+            sigma: 0.1,
+            dt: 0.001,
+            threshold: 2.0,
+        };
+        let result = SurpriseResult {
+            surprise: 2.0,
+            log_return: 0.0,
+            expected_return: 0.0,
+            z_score: 2.0,
+        };
+        assert!(!detect_anomaly(&result, &params));
+    }
 }
