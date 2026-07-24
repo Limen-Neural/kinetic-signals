@@ -1,11 +1,33 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+//! Hurst exponent estimation via rescaled-range (R/S) analysis.
+//!
+//! The Hurst exponent \( H \in [0, 1] \) characterises long-range dependence
+//! in a time series:
+//!
+//! | \( H \) | Interpretation |
+//! |---------|----------------|
+//! | \( > 0.5 \) | Persistent (trending / long memory) |
+//! | \( \approx 0.5 \) | Uncorrelated (random walk) |
+//! | \( < 0.5 \) | Antipersistent (mean-reverting) |
+//!
+//! [`compute_hurst`] uses logarithmically spaced window sizes and linear
+//! regression on the log-log R/S plot. Series shorter than 32 samples return
+//! \( H = 0.5 \) with neither persistence flag set.
+//!
+//! Supports any scalar type implementing the crate's private `Real` trait
+//! (`f32` / `f64`).
+
 use crate::real::Real;
 
+/// Result of a Hurst exponent estimate.
 #[derive(Debug, Clone)]
 pub struct HurstResult<T = f64> {
+    /// Estimated Hurst exponent, clamped to \([0, 1]\).
     pub h: T,
+    /// `true` when \( H > 0.52 \) (small buffer above random-walk).
     pub is_persistent: bool,
+    /// `true` when \( H < 0.48 \) (small buffer below random-walk).
     pub is_antipersistent: bool,
 }
 
@@ -13,6 +35,20 @@ fn c<T: Real>(value: f64) -> T {
     T::from_f64(value)
 }
 
+/// Estimate the Hurst exponent of `data` using R/S analysis.
+///
+/// Returns \( H = 0.5 \) (no persistence flags) when fewer than 32 samples
+/// are provided or the log-log regression is underdetermined.
+///
+/// # Example
+///
+/// ```rust
+/// use kinetic_signals::compute_hurst;
+///
+/// let trending: Vec<f64> = (0..100).map(|i| i as f64).collect();
+/// let result = compute_hurst(&trending);
+/// assert!(result.h >= 0.0 && result.h <= 1.0);
+/// ```
 pub fn compute_hurst<T>(data: &[T]) -> HurstResult<T>
 where
     T: Real,

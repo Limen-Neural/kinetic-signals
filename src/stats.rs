@@ -1,15 +1,43 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+//! Higher-order moments of a real-valued signal.
+//!
+//! [`compute_signal_stats`] computes mean, variance, skewness, and excess
+//! kurtosis in a single pass after the mean is known (two passes total over
+//! the slice). Suitable for batch feature extraction; for streaming variance
+//! prefer [`crate::VolEstimator`].
+
+/// Central moments and shape descriptors of a signal sample.
 #[derive(Debug, Clone)]
 pub struct SignalStats {
+    /// Arithmetic mean.
     pub mean: f64,
+    /// Population variance (\( m_2 / n \), not Bessel-corrected).
     pub variance: f64,
+    /// Sample skewness (\( m_3 / \sigma^3 \)); `0.0` when variance is near zero.
     pub skewness: f64,
+    /// Excess kurtosis (\( m_4 / \sigma^4 - 3 \)); `0.0` for a Gaussian or degenerate series.
     pub kurtosis: f64,
+    /// Number of samples used.
     pub count: usize,
 }
 
 /// Compute high-order moments for a signal using a single-pass algorithm
+/// (after the mean is computed).
+///
+/// Returns an all-zero result for an empty slice.
+///
+/// # Example
+///
+/// ```rust
+/// use kinetic_signals::compute_signal_stats;
+///
+/// let data = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+/// let stats = compute_signal_stats(&data);
+/// assert_eq!(stats.mean, 3.0);
+/// assert_eq!(stats.count, 5);
+/// assert!(stats.variance > 0.0);
+/// ```
 pub fn compute_signal_stats(data: &[f64]) -> SignalStats {
     let n = data.len();
     if n == 0 {
