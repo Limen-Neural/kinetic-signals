@@ -32,6 +32,11 @@ First planned public crates.io release of the reusable, domain-agnostic streamin
 
 ### Breaking changes
 
+- Removed the GBM aliases: `compute_gbm_surprise`,
+  `compute_gbm_surprise_sequence`, `GBMParams`, `GBMResult`, and
+  `gbm::detect_anomaly`. Migrate to `compute_surprise`,
+  `compute_surprise_sequence`, `SurpriseParams`, `SurpriseResult`, and
+  `surprise::detect_anomaly`, respectively.
 - Removed the pre-publication `sentry` Cargo feature and `init_sentry()` API.
   Consumers upgrading from a pre-release build that enabled `features =
   ["sentry"]` must remove that feature and initialize observability in the
