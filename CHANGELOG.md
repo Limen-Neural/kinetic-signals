@@ -32,6 +32,7 @@ First planned public crates.io release of the reusable, domain-agnostic streamin
 
 ### Breaking changes
 
+- Raised the MSRV from Rust 1.85.0 to Rust 1.98.1 for the Rust 2024 crate.
 - Removed the GBM aliases: `compute_gbm_surprise`,
   `compute_gbm_surprise_sequence`, `GBMParams`, `GBMResult`, and
   `gbm::detect_anomaly`. Migrate to `compute_surprise`,
@@ -44,7 +45,7 @@ First planned public crates.io release of the reusable, domain-agnostic streamin
 
 ### Quality and release infrastructure
 
-- Added Rust 1.85 MSRV validation for the Rust 2024 edition.
+- Added minimum-toolchain validation for the Rust 2024 edition.
 - Added no-default-features, formatting, clippy, unit/integration, coverage, Docker, cargo-audit, and Qodana CI gates.
 - Kept the crate free of runtime dependencies; observability belongs to consuming applications.
 

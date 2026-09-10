@@ -45,7 +45,7 @@ jobs:
         run: cargo test --all-features
 
   msrv:
-    name: MSRV Check (1.85.0)
+    name: Minimum Rust Check (1.98.1)
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -54,8 +54,10 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install Rust 1.85.0
-        uses: dtolnay/rust-toolchain@98effd2fc0b766278e30ab86762dd5e9a8531399 # 1.85.0
+      - name: Install Rust 1.98.1
+        uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8 # stable
+        with:
+          toolchain: 1.98.1
 
       - name: Cache cargo registry
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
