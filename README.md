@@ -212,7 +212,7 @@ Note this covers the instantiations the crate actually uses, not every
 theoretically possible instantiation of the unconstrained generic structs
 (e.g. `SurpriseResult<T>`) with an arbitrary caller-supplied `T`.
 
-See [`REVIEW.md`](REVIEW.md#breaking-changes) for the contributor-facing
+See [`REVIEW.md`](https://github.com/rmems/kinetic-signals/blob/main/REVIEW.md#breaking-changes) for the contributor-facing
 checklist to follow when making a breaking change.
 
 ## Cross-language output ranges (SpikeStream.jl alignment)
@@ -220,7 +220,7 @@ checklist to follow when making a breaking change.
 To keep experimental results consistent between this crate and the Julia
 `SpikeStream.jl` implementation, both projects share a single output-range
 convention and a shared test-vector file at
-[`tests/fixtures/shared_vectors.json`](tests/fixtures/shared_vectors.json).
+[`tests/fixtures/shared_vectors.json`](https://github.com/rmems/kinetic-signals/blob/main/tests/fixtures/shared_vectors.json).
 
 | Feature      | Output      | Range            |
 |--------------|-------------|------------------|
@@ -233,7 +233,7 @@ convention and a shared test-vector file at
 | Volatility   | `rms`       | `[0, 1]`         |
 
 The Rust side is verified by integration tests that load
-`tests/fixtures/shared_vectors.json`:
+[`tests/fixtures/shared_vectors.json`](https://github.com/rmems/kinetic-signals/blob/main/tests/fixtures/shared_vectors.json):
 
 ```bash
 cargo test \
@@ -257,7 +257,7 @@ This crate is **domain-agnostic**. It computes streaming signal features (Hurst,
 | Point-process intensity | SNN runtime / neuron models (→ neuromod) |
 | Anomaly detection primitives | Financial domain adapters (→ DendriteTrader.jl) |
 
-See [`docs/boundary-matrix.md`](docs/boundary-matrix.md) for the full boundary matrix.
+See [`docs/boundary-matrix.md`](https://github.com/rmems/kinetic-signals/blob/main/docs/boundary-matrix.md) for the full boundary matrix.
 
 ## License
 
