@@ -70,9 +70,10 @@ After approval and upload:
 3. Create and push the exact `v0.4.0` tag.
 4. Create the GitHub Release from this `0.4.0` entry, without diverging release notes.
 5. Change README installation guidance to `kinetic-signals = "0.4"` only after the registry version is live.
-6. Confirm consuming applications own any observability release integration.
+6. Observability release integration is owned by consuming applications; no
+   crate-side release gate remains.
 
-Do not use `--allow-dirty`, `--no-verify`, or committed registry/Sentry credentials to bypass a failed gate.
+Do not use `--allow-dirty`, `--no-verify`, or committed registry credentials to bypass a failed gate.
 
 [Unreleased]: https://github.com/rmems/kinetic-signals/compare/v0.4.0...HEAD
 [0.4.0]: https://github.com/rmems/kinetic-signals/releases/tag/v0.4.0
