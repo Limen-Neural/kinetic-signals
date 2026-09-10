@@ -28,7 +28,7 @@ Part of the [rmems](https://github.com/rmems) ecosystem. See [`docs/boundary-mat
 ## Toolchain
 
 - **Edition:** 2024 (requires Rust >= 1.85)
-- **MSRV:** 1.85.0 (verified in CI)
+- **MSRV:** 1.85.0 (verified in CI; stable CI jobs use Rust 1.98.1)
 - **No system dependencies** required for the library itself
 
 ## Build & test
