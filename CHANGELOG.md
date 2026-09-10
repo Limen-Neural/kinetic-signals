@@ -10,7 +10,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Continue documenting changes here before preparing the next release.
 
-## [0.4.0] - Unreleased
+## [0.4.0] - 2026-09-10
 
 First planned public crates.io release of the reusable, domain-agnostic streaming signal feature library. This entry describes the repository state prepared for publication; crates.io and docs.rs availability must still be verified after the upload.
 
