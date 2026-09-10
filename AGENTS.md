@@ -27,8 +27,8 @@ Part of the [rmems](https://github.com/rmems) ecosystem. See [`docs/boundary-mat
 
 ## Toolchain
 
-- **Edition:** 2024 (requires Rust >= 1.85)
-- **MSRV:** 1.85.0 (verified in CI; stable CI jobs use Rust 1.98.1)
+- **Edition:** 2024 (requires Rust >= 1.98.1)
+- **MSRV:** 1.98.1 (verified in CI)
 - **No system dependencies** required for the library itself
 
 ## Build & test
@@ -58,7 +58,7 @@ cargo run --example demo
 
 | Workflow | Trigger | What it does |
 |----------|---------|--------------|
-| `ci.yml` | push/PR to main | fmt, clippy, build, test, MSRV check, no-default-features build, cargo audit |
+| `ci.yml` | push/PR to main | fmt, clippy, build, test, minimum-toolchain check, no-default-features build, cargo audit |
 | `coverage.yml` | push/PR to main | cargo-llvm-cov + Codecov upload |
 | `docker.yml` | push/PR to main | Containerized build + test |
 
@@ -110,6 +110,6 @@ cargo run --example demo
 
 Standard commands are documented in the **Build & test** and **Running the demo** sections above. The notes below cover the less obvious environment caveats.
 
-- **Toolchain:** Edition 2024 needs Rust >= 1.85. The base image ships an older `rustc`. The cloud snapshot installs and defaults to a newer `stable` (via `rustup default stable`). Default builds, tests, clippy, and fmt all run under that toolchain.
+- **Toolchain:** Edition 2024 needs Rust >= 1.98.1. The base image ships an older `rustc`. The cloud snapshot installs and defaults to a newer `stable` (via `rustup default stable`). Default builds, tests, clippy, and fmt all run under that toolchain.
 - **`Cargo.lock` is gitignored** (library crate), and the lockfile is regenerated on a fresh checkout. Run `cargo fetch` to pre-warm the dependency cache.
 - **Running the app:** This crate is a library; the "application" is `cargo run --example demo`, which exercises each public API and prints results to stdout (no graphical user interface).
