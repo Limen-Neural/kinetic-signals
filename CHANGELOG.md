@@ -8,7 +8,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Removed
 
-- Dropped the Qodana GitHub Actions workflow and `QODANA_TOKEN` / `QODANA_ENDPOINT` usage after membership expired. Remaining CI gates are fmt, clippy, tests, coverage, Docker, and cargo-audit.
+- Dropped the Qodana GitHub Actions workflow and `QODANA_TOKEN` / `QODANA_ENDPOINT` usage after membership expired.
 
 ## [0.4.0] - 2026-09-10
 
